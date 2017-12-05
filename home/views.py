@@ -18,7 +18,7 @@ def landing(request):
 
     if(access_token == 'expired'):
         # The access code is expired, force them to get a new one by rendering the index page
-        render(request, 'index.html', {'auth_url': AUTH_URL})
+        return render(request, 'index.html', {'auth_url': AUTH_URL})
 
     # Get the user's ID using our new access token
     user_id = sapi.get_user_id(access_token)
