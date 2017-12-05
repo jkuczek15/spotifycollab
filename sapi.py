@@ -21,6 +21,11 @@ def get_access_token(access_code):
     # Make the request to Spotify for the access token and get the JSON response
     r = requests.post(request_url, data, headers)
     response = r.json()
+
+    if(response.get('error') != None):
+        # This is an invalid authorization code
+        return 'expired'
+
     return response.get('access_token')
 
 def get_user_id(access_token):
@@ -28,6 +33,11 @@ def get_user_id(access_token):
     request_url = "https://api.spotify.com/v1/me"
     r = requests.get(request_url, headers={ "Authorization" : "Bearer " + access_token })
     response = r.json()
+
+    if(response.get('error') != None):
+        # Access token is expired
+        return 'expired'
+
     return response.get('id')
 
 ##########################
@@ -36,11 +46,23 @@ def get_user_id(access_token):
 def get_playlists(user_id, access_token):
     request_url = "https://api.spotify.com/v1/users/" + user_id + "/playlists"
     r = requests.get(request_url, headers={ "Authorization" : "Bearer " + access_token })
-    return r.json()
+    response = r.json()
+
+    if(response.get('error') != None):
+        # Access token is expired
+        return 'expired'
+
+    return response
 
 def get_tracks(playlist_url, access_token):
     request_url = playlist_url + "/tracks"
     r = requests.get(request_url, headers={ "Authorization" : "Bearer " + access_token })
-    return r.json()
+    response = r.json()
+
+    if(response.get('error') != None):
+        # Access token is expired
+        return 'expired'
+
+    return response
 
 
