@@ -22,7 +22,7 @@ def landing(request):
 
     # Get the user's ID using our new access token
     user_id = sapi.get_user_id(access_token)
-    
+
     if(user_id == 'expired'):
         # Access token is expired, get a new one and run our request again
         access_token = request.session['access_token'] = sapi.get_access_token(access_code)
@@ -47,10 +47,3 @@ def playlist(request):
     tracks = sapi.get_tracks(playlist_url, access_token)
 
     return render(request, 'playlist.html', {'data': tracks })
-
-def check_access_token(response, access_code, funct):
-    if(response == 'expired'):
-        access_token = request.session['access_token'] = sapi.get_access_token(access_code)
-        return funct(access_token)
-
-    return response
