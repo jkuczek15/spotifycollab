@@ -59,14 +59,23 @@
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1>Welcome</h1>
-        <p>This example is a quick exercise to illustrate how the default, static navbar and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="#" role="button">Host a party</a>
-          <a class="btn btn-lg btn-success" href="#" role="button">Join a party</a>
-        </p>
-        <h1 ng-bind="title"></h1>
-        <input type="text" ng-model="title">
+        <!-- Home Component -->
+        <div ng-show="selectedTab == 'Home'">
+            <h1>Welcome</h1>
+            <p>This example is a quick exercise to illustrate how the default, static navbar and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
+            <p>
+                <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="switchTabs('Host')">Host a party</a>
+                <a class="btn btn-lg btn-success" href="#" role="button">Join a party</a>
+            </p>
+            <h1 ng-bind="title"></h1>
+            <input type="text" ng-model="title">
+        </div> <!-- /Home Component -->
+
+        <!-- Host Component -->
+        <div ng-show="selectedTab == 'Host'">
+            <h1>Host a Party</h1>
+            bitch
+        </div> <!-- /Host Component -->
       </div>
     </div> <!-- /container -->
 
