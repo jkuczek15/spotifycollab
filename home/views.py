@@ -14,10 +14,14 @@ def landing(request):
     access_code = request.GET.get('code')
 
     # Get the access token using either the session or the authorization code
-    access_token = request.session.get('access_token', sapi.get_access_token(access_code))
+    if(request.session['access_token'] == None):
+        access_token = request.session['access_token'] = sapi.get_access_token(access_code)
+    else:   
+        access_token = request.session['access_token']
 
     if(access_token == 'expired'):
         # The access code is expired, force them to get a new one by rendering the index page
+        request.session['access_token'] = None
         return render(request, 'index.html', {'auth_url': AUTH_URL})
 
     # Get the user's ID using our new access token

@@ -25,7 +25,7 @@ def get_access_token(access_code):
     if(response.get('error') != None):
         # This is an invalid authorization code
         return 'expired'
-
+    
     return response.get('access_token')
 
 def get_user_id(access_token):
