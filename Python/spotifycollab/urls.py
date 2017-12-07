@@ -19,5 +19,6 @@ from home import views
 
 urlpatterns = [
     url(r'^', include('home.urls')),
+    url(r'^', include('api.urls')),
     url(r'^admin/', admin.site.urls),
 ]
