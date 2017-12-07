@@ -25,6 +25,7 @@
       <div id="loggedin">
         <div id="user-profile">
         </div>
+        <div id="playlist"></div>
         <div id="oauth">
         </div>
         <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
@@ -59,6 +60,14 @@
       </dl>
     </script>
 
+    <script id="playlist-template" type="text/x-handlebars-template">
+      <h2>Playlists</h2>
+      {{#each items}}
+          <!-- Display each playlist -->
+          <a href="{{href}}">{{name}}</a><br/>
+      {{/each}}
+    </script>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script>
@@ -86,6 +95,10 @@
             oauthTemplate = Handlebars.compile(oauthSource),
             oauthPlaceholder = document.getElementById('oauth');
 
+        var playlistSource = document.getElementById('playlist-template').innerHTML,
+            playlistTemplate = Handlebars.compile(playlistSource),
+            playlistPlaceholder = document.getElementById('playlist');
+
         var params = getHashParams();
 
         var access_token = params.access_token,
@@ -109,6 +122,18 @@
                 },
                 success: function(response) {
                   userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+
+                  $('#login').hide();
+                  $('#loggedin').show();
+                }
+            });
+            $.ajax({  
+                url: 'https://api.spotify.com/v1/me/playlists',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+                success: function(response) {
+                  playlistPlaceholder.innerHTML = playlistTemplate(response);
 
                   $('#login').hide();
                   $('#loggedin').show();

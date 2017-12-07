@@ -57,7 +57,8 @@ app.get('/login', function(req, res) {
 
 app.get('/landing', function(req, res) {
 
-  // your application requests refresh and access tokens
+  // redirected here after authenticating with Spotify
+  // application requests refresh and access tokens
   // after checking the state parameter
 
   var code = req.query.code || null;
