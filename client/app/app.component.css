@@ -1,0 +1,39 @@
+/* Main parent flex class */
+.flex-container {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex; /* or inline-flex */
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+/* Flex item class */
+.item {
+  flex-grow: 1; /* default 0 */
+}
+
+/* Sidebar flex item */
+.item-sidebar {
+  margin-left: 5px;
+  max-width: 450px;
+  height: 100%;
+  flex-grow: 0.075; /* default 0 */
+}
+
+/* Flex the height and width of main content */
+.row.content-flex {
+   height: auto;
+   overflow: hidden;
+}
+
+/* Apply right sidebar background */
+.sidenav {
+  background-color: #f1f1f1;
+  height: 640px; 
+}
+
+/* Flexbox item spacing */
+.item-spacing {
+  padding-right: 40px;
+}

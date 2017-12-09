@@ -1,0 +1,17 @@
+<app-navbar></app-navbar>
+
+<div class="flex-container container-fluid row content-flex">
+  <div class="item-sidebar" *ngIf="show_sidebar_left">
+    <app-sidebar-left></app-sidebar-left>
+  </div>
+  <div class="item-spacing" *ngIf="show_item_spacing"></div>
+  <div class="item">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="item-spacing" *ngIf="show_item_spacing"></div>
+  <div class="item-sidebar sidenav" *ngIf="show_sidebar_right">
+    <app-sidebar-right></app-sidebar-right>
+  </div>
+</div>
+
+<app-footer></app-footer>

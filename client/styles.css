@@ -1,0 +1,184 @@
+/* 
+   Global Style sheet, add any styles here that should be applied 
+   accross multiple components.                                 
+*/
+
+/* Set height of the grid so sidebar can be 100% (adjust as needed) */
+.row.content {
+    height: 640px; 
+    border-radius: 0 !important;
+    overflow: hidden;
+}
+
+body { 
+  padding-top: 50px; 
+}
+
+/* Add pointer links to all hrefs */
+a {
+  color: #2d719f;
+  cursor: pointer;
+}
+
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+    .sidenav {
+        height: auto;
+        padding: 1.07em;
+    }
+    .row.content {height:auto;} 
+}
+
+/* Set select boxes to be light gray when invalid */
+select:invalid { 
+    color: lightslategray; 
+}
+
+/* Make it so alerts don't change position of form inputs */
+.alert {
+  position: absolute;
+  float: left;
+  margin: auto; 
+  display: table;
+}
+
+/* ###### Bootstrap Tables ###### */
+table {
+    border-collapse: separate;
+    border-spacing: 0 5px;
+}
+
+thead th {
+    background-color: #000000;
+    color: white;
+}
+
+.panel-table .panel-body {
+  padding:0;
+}
+
+.panel-table .panel-body .table-bordered {
+  border-style:none;
+  margin:0;
+}
+
+.panel-table .panel-body .table-bordered > thead > tr > th:first-of-type {
+  text-align:center;
+  width:100px;
+}
+
+.panel-table .panel-body .table-bordered > thead > tr > th:last-of-type, .panel-table .panel-body .table-bordered > tbody > tr > td:last-of-type {
+  border-right:0px;
+}
+
+.panel-table .panel-body .table-bordered > thead > tr > th:first-of-type, .panel-table .panel-body .table-bordered > tbody > tr > td:first-of-type {
+  border-left:0px;
+}
+
+.panel-table .panel-body .table-bordered > tbody > tr:first-of-type > td {
+  border-bottom:0px;
+}
+
+.panel-table .panel-body .table-bordered > thead > tr:first-of-type > th {
+  border-top:0px;
+}
+
+.panel-table .panel-footer .pagination {
+  margin:0;
+}
+
+.panel-table .panel-footer .col {
+  line-height:34px;
+  height:34px;
+}
+
+.panel-table .panel-heading .col h3 {
+  line-height:30px;
+  height:30px;
+}
+
+.panel-table .panel-body .table-bordered > tbody > tr > td {
+  line-height:34px;
+}
+/* ###### [/ Bootstrap Tables] ###### */
+
+/* ###### Google Inputs ###### */
+.group {
+  position:relative;
+  margin-bottom:25px;
+}
+
+input {
+  font-size:14px;
+  padding:10px 10px;
+  display:block;
+  border:none;
+  border-bottom:1px solid #757575;
+}
+
+input:focus {
+  outline:none;
+}
+
+label {
+  color:#999;
+  font-size:14px;
+  font-weight:normal;
+  position:absolute;
+  pointer-events:none;
+  left:5px;
+  top:10px;
+  transition:0.2s ease all;
+}
+
+input:focus ~ label, input:valid ~ label {
+  top:-20px;
+  font-size:14px;
+  color:#2980EF;
+}
+
+.bar {
+  position:relative;
+  display:block;
+  width:270px;
+}
+
+.bar:before, .bar:after {
+  content:'';
+  height:2px;
+  width:0;
+  bottom:1px;
+  position:absolute;
+  background: #2980EF;
+  transition:0.2s ease all;
+}
+
+.bar:before {
+  left:50%;
+}
+
+.bar:after {
+  right:50%;
+}
+
+input:focus ~ .bar:before, input:focus ~ .bar:after {
+  width:50%;
+}
+
+.highlight {
+  position:absolute;
+  height:60%;
+  width:100px;
+  top:25%;
+  left:0;
+  pointer-events:none;
+  opacity:0.5;
+}
+
+input:focus ~ .highlight {
+  animation:inputHighlighter 0.3s ease;
+}
+/* ###### [/ Google Inputs] ###### */
+
+/* ###### Import custom theme ###### */
+@import url('assets/css/theme.css');
