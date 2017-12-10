@@ -11,5 +11,9 @@
   "exclude": [
     "test.ts",
     "**/*.spec.ts"
+  ],
+  "lib": [
+    "dom",
+    "es7"
   ]
 }

@@ -1,9 +1,13 @@
 <h1>Dashboard</h1>
+
 <div class="row content">
     <div class="container">
-        <div class="panel panel-primary">
+        <div class="panel panel-primary" [hidden]="joined">
             <div class="panel-body">
             <form>
+                <div [hidden]="!error" class="alert alert-danger">
+                    <strong>Error: </strong> {{ error }}
+                </div>
                 <div class="form-group">
                     <input type="text" class="form-control" [(ngModel)]="roomName" name="roomName" placeholder="Room name..." required />
                 </div>
@@ -14,7 +18,20 @@
                 <button type="submit" class="btn btn-success btn-block" (click)="hostRoom()">Host</button>
                 </div>
             </form>
+            <form>
+                <div class="form-group">
+                    <input type="text" class="form-control" [(ngModel)]="messageText" name="messageText" placeholder="Message..." required />
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-block" (click)="sendMessage()">Send Message</button>
+                </div>
+                <div></div>
+            </form>
             </div>
+        </div>
+
+        <div [hidden]="!joined">
+            This appears after you join a room
         </div>
     </div>
 </div>

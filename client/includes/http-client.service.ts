@@ -10,6 +10,9 @@ export class HttpClient {
 
   createAuthorizationHeader(headers: Headers) {
     headers.append('Authorization', 'Bearer ' + this.authentication.getToken()); 
+    headers.append('Access-Control-Allow-Origin', "*");
+    headers.append('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+    //headers.append('Access-Control-Allow-Headers:', 'Origin, Content-Type, X-Auth-Token');
   }// end function createAuthorizationHeader
 
   get(url) {

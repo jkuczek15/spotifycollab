@@ -34,14 +34,6 @@ select:invalid {
     color: lightslategray; 
 }
 
-/* Make it so alerts don't change position of form inputs */
-.alert {
-  position: absolute;
-  float: left;
-  margin: auto; 
-  display: table;
-}
-
 /* ###### Bootstrap Tables ###### */
 table {
     border-collapse: separate;

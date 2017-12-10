@@ -6,6 +6,16 @@ var bodyParser = require('body-parser');
 
 // Initalize the express application
 var app = express();
+ 
+// Initialize CORs for cross-domain origin requests
+var cors = require('cors');
+
+// Enable preflight requests
+// Include before other routes
+app.options('*', cors()); 
+
+// Activate cors
+app.use(cors());
 
 // Initialize the node logger
 app.use(logger('dev'));

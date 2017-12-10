@@ -5,6 +5,7 @@ import { HttpClient } from '../../includes/http-client.service';
 import { DerpPipe } from '../../includes/derp.pipe';
 import * as PlaylistVM from '../../includes/viewModels/Playlist.js';
 import * as io from "socket.io-client";
+import { last } from '@angular/router/src/utils/collection';
 declare var $: any;
 
 @Component({
@@ -15,11 +16,15 @@ declare var $: any;
 export class DashboardComponent implements OnInit {
 
   constructor(private authentication: AuthService,
-              private dashboardService: DashboardService) { }
+              private dashboardService: DashboardService,
+              private http: HttpClient) { }
 
   // the user data from spotify (includes access token)
   private playlists;
   private roomName: string;
+  private messageText: string;
+  private joined: boolean;
+  private error: string;
   private socket = io('http://localhost:4000');
 
   ngOnInit() {
@@ -30,9 +35,9 @@ export class DashboardComponent implements OnInit {
       this.authentication.saveUser(user);
     }// end if we have valid hash params
 
-    this.socket.on('new-message', function (data) {
+    this.socket.on('message', function (data) {
       console.log(data);
-    }.bind(this));
+    });
 
     this.getPlaylists();
   }// end ngOnInit function
@@ -54,15 +59,47 @@ export class DashboardComponent implements OnInit {
   }// end function getPlaylists()
 
   joinRoom(){
-    this.socket.emit('save-message', { message: 'this is a test from join room.' });
-    console.log(this.roomName);
+
+    this.dashboardService.getRooms().then((rooms: any[]) => {
+
+      if(rooms.includes(this.roomName)){
+        // the room exists, subscribe the user to this room
+        console.log('Successfully joined room: ' + this.roomName);
+        this.socket.emit('subscribe', this.roomName);
+        this.joined = true;
+      }else{
+        // room doesn't exist, throw an error to user
+        this.error = "Room does not exist";
+      }// end if room exists
+    }, (err) => {
+      console.log(err);
+    });
+
     return true;
-  }// end template roomform
+  }// end function joinRoom
 
   hostRoom(){
-    console.log(this.roomName);
-    return true;
-  }// end template roomform
+    this.dashboardService.getRooms().then((rooms: any[]) => {
+      
+      if(rooms.includes(this.roomName)){
+        // the room exists, subscribe the user to this room
+        this.error = 'Could not create room, room already exists'; 
+      }else{
+        // room doesn't exist, create it now and subscribe 
+        // the current user to the room
+        console.log("Successfully created room");
+        this.socket.emit('create-room', { user: this.authentication.getUser(), room: this.roomName });
+        this.socket.emit('subscribe', this.roomName);
+        this.joined = true;
+      }// end if room exists
+    }, (err) => {
+      console.log(err);
+    });
+  }// end function hostRoom
+
+  sendMessage(){ 
+   this.socket.emit('send', { room: this.roomName, message: this.messageText });
+  }// end function sendMessage
 
   /**
     * Obtains parameters from the hash of the URL
