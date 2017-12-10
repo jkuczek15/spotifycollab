@@ -19,9 +19,9 @@ app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, '/../', 'client', 'dist', 'index.html'));
 });
 
-var chat = require('./api/routes/chat');
-
-app.use('/api/chat', chat);
+// Activate the socket.io room routes
+var room = require('./api/routes/room');
+app.use('/api/room', room);
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var Chat = require('../models/Chat.js');
+var Room = require('../models/Room.js');
 
 server.listen(4000);
 
@@ -22,18 +22,12 @@ io.on('connection', function (socket) {
 
 /* GET ALL CHATS */
 router.get('/:room', function(req, res, next) {
-  Chat.find({ room: req.params.room }, function (err, chats) {
-    if (err) return next(err);
-    res.json(chats);
-  });
+  res.json({'test': 'test'});
 });
 
 /* SAVE CHAT */
 router.post('/', function(req, res, next) {
-  Chat.create(req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
-  });
+  res.json({'test': 'test'});
 });
 
 module.exports = router;

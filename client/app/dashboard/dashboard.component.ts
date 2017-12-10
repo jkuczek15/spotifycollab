@@ -4,6 +4,7 @@ import { DashboardService } from './dashboard.service'
 import { HttpClient } from '../../includes/http-client.service';
 import { DerpPipe } from '../../includes/derp.pipe';
 import * as PlaylistVM from '../../includes/viewModels/Playlist.js';
+import * as io from "socket.io-client";
 declare var $: any;
 
 @Component({
@@ -18,6 +19,8 @@ export class DashboardComponent implements OnInit {
 
   // the user data from spotify (includes access token)
   private playlists;
+  private roomName: string;
+  private socket = io('http://localhost:4000');
 
   ngOnInit() {
     var user = this.getHashParams();
@@ -26,6 +29,10 @@ export class DashboardComponent implements OnInit {
     if(Object.keys(user).length !== 0 || user.constructor !== Object){
       this.authentication.saveUser(user);
     }// end if we have valid hash params
+
+    this.socket.on('new-message', function (data) {
+      console.log(data);
+    }.bind(this));
 
     this.getPlaylists();
   }// end ngOnInit function
@@ -47,12 +54,13 @@ export class DashboardComponent implements OnInit {
   }// end function getPlaylists()
 
   joinRoom(){
-    console.log('Join Room');
+    this.socket.emit('save-message', { message: 'this is a test from join room.' });
+    console.log(this.roomName);
     return true;
   }// end template roomform
 
   hostRoom(){
-    console.log('Host Room');
+    console.log(this.roomName);
     return true;
   }// end template roomform
 
