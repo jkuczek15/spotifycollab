@@ -24,7 +24,7 @@ paths:
     # binds a127 app logic to a route
     x-swagger-router-controller: user
     get:
-      description: Returns information about the currently logged in user
+      description: Authenticates the user using Spotify Authorization Flow and redirects them to a URL defined from our API function. 
       # used as the method name of the controller
       operationId: get
       parameters:

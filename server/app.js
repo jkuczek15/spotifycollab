@@ -21,16 +21,16 @@ app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({'extended':'false'}));
-app.use(express.static(path.join(__dirname, '/../', 'client', 'dist')));
+app.use(express.static(path.join(__dirname, '/../', 'web', 'dist')));
 
 // For all public routes, send our index.html file
 // We will let the Angular Router handle it from there
 app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, '/../', 'client', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '/../', 'web', 'dist', 'index.html'));
 });
 
 // Activate the socket.io room routes
-var room = require('./api/routes/room');
+var room = require('./socket-api/routes/room');
 app.use('/api/room', room);
 
 // Catch 404 and forward to error handler

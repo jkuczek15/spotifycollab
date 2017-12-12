@@ -1,6 +1,30 @@
-# Web Dev
+# Spotify Collab
+
+Node.js, Express, Angular 4, Swagger, Socket.io
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.2.0.
+
+# First Steps (Installing software and setting up environment)
+
+1. Install Node.js and npm from [here](https://nodejs.org/en/download/).
+2. Run npm install inside the project directory to install missing dependencies.
+3. Run the following three commands:
+
+    `npm install -g nodemon`
+
+    `npm install -g swagger`
+
+    `npm install -g angular-cli`
+
+4. Optionally install [mongoDB](https://www.mongodb.com/download-center#community) for a database (we don't have plans to store data yet, but we probably will soon).
+5. That's it, if you've made it this far, you're ready to run the project.
+
+# Run the project
+1. Navigate to the project directory and run `ng build --watch`. This watches the client side for changes.
+2. Navigate to the project directory and run `nodemon`, this starts the web server along with socket.io on two separate ports. This also watches the server for changes.
+3. Navigate to the folder titled 'rest-api' and run the command `swagger project start`, this starts the rest-api which we will interact with both from the client and the server.
+4. (Optional) Run a mongodb database server and connect to it with either the rest-api or the web server/socket.io. Usually the command is something like `./{path_to_mongodb}/Server/{version}/bin/mongod`
+5. (Optinal) Navigate to 'rest-api' folder and run `swagger project edit`, this allows us to edit and test our rest-api using swagger's slick interface.
 
 ## Development server
 
@@ -21,15 +45,6 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Production and Development Environments
 
 The `-prod` flag can be added to both the `ng build` and `ng serve` commands. In components, this will set the global variable `environment.production` to true. Note that in production, Angular minifys JS and CSS files so the project runs a lot smoother.
-
-## Full Testing
-We can test both the API and our development changes by doing the following: 
-
-1. Navigate to project folder, run `npm install` to install any missing dependencies.
-2. Make sure you have [mongoDB](https://www.mongodb.com/download-center#community) installed and it is running on port 27017.
-2. Run `ng build` to build the project.
-3. Run `npm start` to run the project.
-4. Navigate  [http://localhost:3000/](http://localhost:3000/) in your browser.
 
 ## Running end-to-end tests
 

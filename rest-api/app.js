@@ -6,11 +6,13 @@ var mongoose = require('mongoose');
 var app = require('express')();
 
 // Connect to mongoDB
+/* Uncomment to connect to database
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/database', {
     useMongoClient: true
 }).then(() =>  console.log('MongoDB Connection Successful'))
   .catch((err) => console.error(err));
+*/
 
 var config = {
   appRoot: __dirname // required config
