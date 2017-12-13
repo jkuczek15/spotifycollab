@@ -302,6 +302,11 @@ var AuthService = (function () {
     AuthService.prototype.getUser = function () {
         return JSON.parse(this.window.sessionStorage['user'] || null);
     }; // end function getUser
+    AuthService.prototype.getUserID = function () {
+        // returns the spotify id of the user
+        var user = this.getUser();
+        return user['id'] || null;
+    }; // end function getUserID
     AuthService.prototype.getToken = function () {
         var user = this.getUser();
         return user['access_token'] || null;
@@ -650,7 +655,7 @@ __webpack_require__("../../../../rxjs/_esm5/add/operator/filter.js");
 var querystring = __webpack_require__("../../../../querystring-es3/index.js");
 // required variables for Spotify authentication
 var client_id = 'b6f40e9463ba406792aa0914d5c64bcb'; // Your client id
-var scope = 'user-read-private user-read-email';
+var scope = 'user-read-private user-read-email user-library-read playlist-modify-private playlist-modify-public playlist-read-private';
 var redirect_uri = 'http://127.0.0.1:10010/user'; // Your redirect uri
 var NavbarComponent = (function () {
     function NavbarComponent(authentication, routeControl, window) {
@@ -861,7 +866,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../web/app/dashboard/dashboard.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h1>Dashboard</h1>\r\n\r\n<div class=\"row content\">\r\n    <div class=\"container\">\r\n        <div class=\"panel panel-primary\" [hidden]=\"joined\">\r\n            <div class=\"panel-body\">\r\n            <form>\r\n                <div [hidden]=\"!error\" class=\"alert alert-danger\">\r\n                    <strong>Error: </strong> {{ error }}\r\n                </div>\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" class=\"form-control\" [(ngModel)]=\"roomName\" name=\"roomName\" placeholder=\"Room name...\" required />\r\n                </div>\r\n                <div class=\"form-group\">\r\n                <button type=\"submit\" class=\"btn btn-primary btn-block\" (click)=\"joinRoom()\">Join</button>\r\n                </div>\r\n                <div class=\"form-group\">\r\n                <button type=\"submit\" class=\"btn btn-success btn-block\" (click)=\"hostRoom()\">Host</button>\r\n                </div>\r\n            </form>\r\n            <form>\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" class=\"form-control\" [(ngModel)]=\"messageText\" name=\"messageText\" placeholder=\"Message...\" required />\r\n                </div>\r\n                <div class=\"form-group\">\r\n                    <button type=\"submit\" class=\"btn btn-success btn-block\" (click)=\"sendMessage()\">Send Message</button>\r\n                </div>\r\n                <div></div>\r\n            </form>\r\n            </div>\r\n        </div>\r\n\r\n        <div [hidden]=\"!joined\">\r\n            This appears after you join a room\r\n        </div>\r\n    </div>\r\n</div>"
+module.exports = "<h1>Dashboard<span [hidden]=\"!joined\"> - {{ room.name }}</span></h1>\r\n\r\n<div class=\"row content\">\r\n    <div class=\"container-fluid\">\r\n        <div class=\"col-sm-6\" [hidden]=\"joined\">\r\n            <div class=\"panel panel-primary\">\r\n                <div class=\"panel-heading\">Sparty</div>\r\n                <div class=\"panel-body\">\r\n                    <form>\r\n                        <div [hidden]=\"!error\" class=\"alert alert-danger\">\r\n                            <strong>Error: </strong> {{ error }}\r\n                        </div>\r\n                        <div class=\"form-group row\">\r\n                            <div class=\"col-xs-6\">\r\n                                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"roomName\" name=\"roomName\" placeholder=\"Room name...\" required />\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group row\">\r\n                            <div class=\"col-xs-6\">\r\n                                <button type=\"submit\" class=\"btn btn-primary btn-block\" (click)=\"joinRoom()\">Join</button>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"form-group row\">\r\n                            <div class=\"col-xs-6\">\r\n                                <button type=\"submit\" class=\"btn btn-success btn-block\" (click)=\"hostRoom()\">Host</button>\r\n                            </div>\r\n                        </div>\r\n                    </form>\r\n                </div>\r\n            </div>\r\n        </div>\r\n\r\n        <div [hidden]=\"!joined\">\r\n            <div class=\"row\">\r\n                <div class=\"col-sm-2\">\r\n                    <h4>Users:</h4>\r\n                    <ul>\r\n                        <li *ngFor=\"let user of room.users\"> \r\n                            {{ user.display_name }} <span *ngIf=\"user.host\"> - Host</span>\r\n                        </li>\r\n                    </ul>\r\n                </div>\r\n                <div class=\"col-sm-4\">\r\n                    <h4>Queue:</h4>\r\n                    <div class=\"pre-scrollable\" style=\"max-height: 70vh\">\r\n                        <table class=\"table\">\r\n                                <thead>\r\n                                    <tr>\r\n                                        <th scope=\"col\">#</th>\r\n                                        <th scope=\"col\">Name</th>\r\n                                        <th scope=\"col\">Artist</th>\r\n                                        <th scope=\"col\">Album</th>\r\n                                    </tr>\r\n                                </thead>\r\n                                <tbody>\r\n                                    <tr *ngFor=\"let item of room.queue.tracks.items; let i = index\">\r\n                                        <td>{{ i+1 }}</td>\r\n                                        <td>{{ item.track.name }}</td>\r\n                                        <td>{{ item.track.artists[0].name }}</td>\r\n                                        <td>{{ item.track.album.name }}</td>\r\n                                    </tr>\r\n                                </tbody>\r\n                        </table>\r\n                    </div>\r\n                    {{ room.queue }}\r\n                </div>\r\n                <div class=\"col-sm-6\">\r\n                    <h4>Your songs:</h4>\r\n                    <div class=\"pre-scrollable\" style=\"max-height: 70vh\">\r\n                        <table class=\"table\">\r\n                                <thead>\r\n                                    <tr>\r\n                                        <th scope=\"col\">#</th>\r\n                                        <th scope=\"col\">Name</th>\r\n                                        <th scope=\"col\">Artist</th>\r\n                                        <th scope=\"col\">Album</th>\r\n                                        <th scope=\"col\">Options</th>\r\n                                    </tr>\r\n                                </thead>\r\n                                <tbody>\r\n                                    <tr *ngFor=\"let item of library; let i = index\">\r\n                                        <td>{{ i+1 }}</td>\r\n                                        <td>{{ item.track.name }}</td>\r\n                                        <td>{{ item.track.artists[0].name }}</td>\r\n                                        <td>{{ item.track.album.name }}</td>\r\n                                        <td><span (click)=\"addTrack(item)\" class=\"glyphicon glyphicon-plus\"></span></td>\r\n                                    </tr>\r\n                                </tbody>\r\n                        </table>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
 
 /***/ }),
 
@@ -885,7 +890,7 @@ var auth_service_1 = __webpack_require__("../../../../../web/app/auth/auth.servi
 var dashboard_service_1 = __webpack_require__("../../../../../web/app/dashboard/dashboard.service.ts");
 var http_client_service_1 = __webpack_require__("../../../../../web/includes/http-client.service.ts");
 var route_helper_module_1 = __webpack_require__("../../../../../web/includes/utils/route-helper.module.ts");
-var PlaylistVM = __webpack_require__("../../../../../web/includes/viewModels/Playlist.js");
+var RoomVM = __webpack_require__("../../../../../web/includes/viewModels/Room.js");
 var io = __webpack_require__("../../../../socket.io-client/lib/index.js");
 var DashboardComponent = (function () {
     function DashboardComponent(authentication, dashboardService, routeControl, http) {
@@ -896,20 +901,35 @@ var DashboardComponent = (function () {
         this.socket = io('http://localhost:4000');
     }
     DashboardComponent.prototype.ngOnInit = function () {
-        this.socket.on('message', function (data) {
-            console.log(data);
+        var self = this;
+        self.room = new RoomVM.Room;
+        self.library = [];
+        // create a handler for error messages, updating them as the server passes them back
+        // handler to be called upon return of an error message from Socket.io
+        this.socket.on('error-message', function (data) {
+            self.error = data;
         });
-        this.getPlaylists();
+        // create a handler for when the room is updated or changed
+        this.socket.on('room-update', function (data) {
+            console.log("Room update:", data);
+            self.room = data.room;
+            self.joined = true;
+            if (data.created) {
+                // this room was just created, initialize the room
+                // first create a playlist we will use
+                self.initRoom(self.room.name);
+            } // end if the room was recently created
+        });
+        this.getLibrary();
     }; // end ngOnInit function
-    DashboardComponent.prototype.getPlaylists = function () {
+    DashboardComponent.prototype.getLibrary = function () {
         var _this = this;
         var user = this.authentication.getUser();
         var self = this;
-        this.playlists = new PlaylistVM.Playlist();
         // Grab our playlist data using the service
-        this.dashboardService.getPlaylists().then(function (data) {
-            _this.playlists = data.items;
-            console.log(_this.playlists);
+        this.dashboardService.getLibrary().then(function (data) {
+            _this.library = data.items;
+            console.log(_this.library);
         }, function (err) {
             if (err.status !== 401) {
                 console.log(err);
@@ -917,47 +937,35 @@ var DashboardComponent = (function () {
         });
     }; // end function getPlaylists()
     DashboardComponent.prototype.joinRoom = function () {
-        var _this = this;
-        this.dashboardService.getRooms().then(function (rooms) {
-            // first check if this room exists
-            if (rooms.includes(_this.roomName)) {
-                // the room exists, subscribe the user to this room
-                console.log('Successfully joined room: ' + _this.roomName);
-                _this.socket.emit('subscribe', _this.roomName);
-                _this.joined = true;
-            }
-            else {
-                // room doesn't exist, throw an error to user
-                _this.error = "Room does not exist";
-            } // end if room exists
-        }, function (err) {
-            console.log(err);
-        });
-        return true;
+        this.socket.emit('join-room', { user: this.authentication.getUser(), room: this.roomName });
     }; // end function joinRoom
     DashboardComponent.prototype.hostRoom = function () {
-        var _this = this;
-        this.dashboardService.getRooms().then(function (rooms) {
-            // first check if this room exists
-            if (rooms.includes(_this.roomName)) {
-                // the room exists, throw an error and don't let them create this room
-                _this.error = 'Could not create room, room already exists';
-            }
-            else {
-                // room doesn't exist, create it now and subscribe 
-                // the current user to the room
-                console.log("Successfully created room: " + _this.roomName);
-                _this.socket.emit('create-room', { user: _this.authentication.getUser(), room: _this.roomName });
-                _this.socket.emit('subscribe', _this.roomName);
-                _this.joined = true;
-            } // end if room exists
-        }, function (err) {
-            console.log(err);
-        });
+        this.socket.emit('create-room', { user: this.authentication.getUser(), room: this.roomName });
     }; // end function hostRoom
-    DashboardComponent.prototype.sendMessage = function () {
-        this.socket.emit('send', { room: this.roomName, message: this.messageText });
-    }; // end function sendMessage
+    DashboardComponent.prototype.initRoom = function (roomName) {
+        var _this = this;
+        // function should be called as soon as host gets the OK to create a room
+        var playlist = {
+            description: "Boom room playlist",
+            public: false,
+            name: "Boom Room - " + roomName
+        };
+        this.dashboardService.createPlaylist(this.authentication.getUserID(), playlist).then(function (data) {
+            // load the queue into the client side and emit a socket message telling everyone
+            // that the queue has been created
+            _this.queue = data;
+            _this.socket.emit('create-queue', { room: _this.room.name, queue: data });
+        }, function (err) {
+            if (err.status !== 401) {
+                console.log(err);
+            } // end if not unauthorized error
+        });
+    }; // end function initRoom
+    DashboardComponent.prototype.addTrack = function (item) {
+        //console.log(item);
+        var track_id = item.track.id;
+        this.socket.emit('add-track', { room: this.room.name, track_id: track_id });
+    }; // end function addTrack
     return DashboardComponent;
 }()); // end class DashboardComponent
 DashboardComponent = __decorate([
@@ -995,10 +1003,10 @@ var DashboardService = (function () {
     function DashboardService(http) {
         this.http = http;
     }
-    DashboardService.prototype.getPlaylists = function () {
+    DashboardService.prototype.getLibrary = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            _this.http.get('https://api.spotify.com/v1/me/playlists')
+            _this.http.get('https://api.spotify.com/v1/me/tracks')
                 .map(function (res) { return res.json(); })
                 .subscribe(function (res) {
                 resolve(res);
@@ -1007,10 +1015,10 @@ var DashboardService = (function () {
             });
         });
     }; // end function getChatByRoom
-    DashboardService.prototype.getRooms = function () {
+    DashboardService.prototype.createPlaylist = function (user_id, data) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            _this.http.get('http://127.0.0.1:4000/rooms')
+            _this.http.post('https://api.spotify.com/v1/users/' + user_id + '/playlists', data)
                 .map(function (res) { return res.json(); })
                 .subscribe(function (res) {
                 resolve(res);
@@ -1018,7 +1026,7 @@ var DashboardService = (function () {
                 reject(err);
             });
         });
-    }; // end function getChatByRoom
+    }; // end function createPlaylist
     return DashboardService;
 }()); // end class DashboardService
 DashboardService = __decorate([
@@ -1613,15 +1621,17 @@ var _a;
 
 /***/ }),
 
-/***/ "../../../../../web/includes/viewModels/Playlist.js":
+/***/ "../../../../../web/includes/viewModels/Room.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (immutable) */ __webpack_exports__["Playlist"] = Playlist;
+/* harmony export (immutable) */ __webpack_exports__["Room"] = Room;
 // Create custom view models for our different forms
-function Playlist () {
+function Room () {
     this.name = "";
+    this.users = [];
+    this.queue = { tracks: {} };
 };// end interface class Register
 
 /***/ }),

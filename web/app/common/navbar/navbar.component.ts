@@ -8,7 +8,7 @@ declare var $: any;
 
 // required variables for Spotify authentication
 var client_id = 'b6f40e9463ba406792aa0914d5c64bcb';  // Your client id
-var scope = 'user-read-private user-read-email';
+var scope = 'user-read-private user-read-email user-library-read playlist-modify-private playlist-modify-public playlist-read-private';
 var redirect_uri = 'http://127.0.0.1:10010/user';    // Your redirect uri
 
 @Component({

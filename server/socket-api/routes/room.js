@@ -7,39 +7,108 @@ var io = require('socket.io')(server);
 var Room = require('../models/Room.js');
 var methodOverride = require('method-override');
 var cors = require('cors');
+var request = require('request');
 
 server.listen(4000);
 
+// change later, just use some random string for now
+var HOST_ROOM = 'SPbKT7VNYB'
 var rooms = [];
+var hosts = [];
 
 // socket io
 io.on('connection', function (socket) {
-  socket.on('subscribe', function(room) { 
-    console.log('joining room', room);
-    socket.join(room); 
-  })
   
-  socket.on('unsubscribe', function(room) {  
-    console.log('leaving room', room);
-    socket.leave(room); 
-  })
-  
-  socket.on('send', function(data) {
-    console.log('sending message');
-    io.sockets.in(data.room).emit('message', data);
+  socket.on('join-room', function(data) {
+    // Initialize the room, first check
+    // that the room doesn't exist yet
+    if(data.room in rooms){
+      // the room exists, add this user
+      var user = data.user;
+      var room = data.room;
+      rooms[room].users.push(user);
+      socket.join(room);
+
+      console.log(rooms[room]);
+      // send a message to all users in the room (including recently joined user)  
+      io.sockets.in(room).emit('room-update', {room: rooms[room]});
+    }else{
+      // send an error back to the socket that sent this request
+      socket.emit('error-message', "Room does not exist yet. Click 'host' to start one now!");      
+    }// end if the room hasn't been created
   });
 
   socket.on('create-room', function(data) {
     // Initialize the room, first check
     // that the room doesn't exist yet
-    if(rooms.includes(data.room)){
-      io.sockets.emit('message', "Room already created");
+    if(data.room in rooms){
+      // send an error back to the socket that sent this request
+      socket.emit('error-message', "Room already created");
     }else{
-      rooms.push(data.room);
-      io.sockets.in(data.room).emit('message', data);
+      // the room does not exist, create it now
+      var room = data.room;
+      var user = data.user;
+
+      // set the host variable to true since this is the user who created the room
+      // initialize the room with an empty play queue
+      user['host'] = true;
+      rooms[room] = {
+        name: room,
+        users: [user],
+        queue: { tracks: {} }
+      };
+
+      // join the current user to the 'host' room, this makes it easy to 
+      // send commands to the host, it also gives us some kind of security (I think)
+      socket.join(HOST_ROOM);
+      
+      // join the current socket to the room and send message to all users in room
+      socket.join(room);
+      io.sockets.in(room).emit('room-update', { room: rooms[room], created: true });
     }// end if the room hasn't been created
   });
 
+  socket.on('create-queue', function(data) {
+    var room = data.room;
+    rooms[room].queue = data.queue;
+    
+    io.sockets.in(room).emit('room-update', { room: rooms[room] });    
+  });
+
+  socket.on('add-track', function(data) {
+    var track_id = data.track_id;
+    var room = data.room;
+
+    // first find the host user's information
+    room = rooms[room];
+    var host = room.users.find(function(user){
+      return user.host === true;
+    });
+
+    //console.log(room.queue);
+    
+
+    var url = 'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?position=0&uris=' + encodeURIComponent('spotify:track:'+track_id)
+    console.log(host);
+    console.log(url);
+
+    var options = {
+      url:  url,
+      headers: {
+          'Authorization': 'Bearer ' + host.access_token,
+          'Content-Type' : 'application/json'
+      }
+    };
+
+    request.post(options, function(error, response, body){
+      console.log(body);
+    });
+
+    //console.log(host);
+
+    // only emit this event to the hosts
+    //io.sockets.in(room).in(HOST_ROOM).emit('add-track', { room: rooms[room] });    
+  });
 });
 
 app.post('/send/:room/', function(req, res) {
@@ -51,6 +120,9 @@ app.post('/send/:room/', function(req, res) {
   res.end('message sent');
 });
 
+/*
+We only need this if we want to make direct API requests from the client
+to the Socket.io server
 
 // Initialize a CORS preflight request for this particular route
 // This includes both the options and delete request
@@ -63,5 +135,6 @@ app.delete('/rooms', cors(), function(req, res){
 app.get('/rooms', cors(), function (req, res, next) {
   res.json(rooms);
 });
+*/
 
 module.exports = router;

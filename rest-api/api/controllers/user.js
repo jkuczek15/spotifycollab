@@ -74,9 +74,7 @@ function get(req, res) {
                 user['refresh_token'] = access.refresh_token;
                 user['expires_in'] = access.expires_in;
                 user['access_time'] = new Date().getTime() / 1000;
-
-                console.log(user);
-                
+           
                 // redirect to the dashboard with the user data in the URL
                 res.redirect('http://127.0.0.1:3000/dashboard#' + querystring.stringify(user));
             });

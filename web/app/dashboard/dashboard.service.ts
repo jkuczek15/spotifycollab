@@ -7,9 +7,9 @@ export class DashboardService {
 
   constructor(private http: HttpClient) { }
 
-  getPlaylists() {
+  getLibrary() {
     return new Promise((resolve, reject) => {
-      this.http.get('https://api.spotify.com/v1/me/playlists')
+      this.http.get('https://api.spotify.com/v1/me/tracks')
         .map(res => res.json())
         .subscribe(res => {
           resolve(res);
@@ -19,16 +19,16 @@ export class DashboardService {
     });
   }// end function getChatByRoom
 
-  getRooms() {
+  createPlaylist(user_id, data){
     return new Promise((resolve, reject) => {
-      this.http.get('http://127.0.0.1:4000/rooms')
-        .map((res: Response) => res.json())
+      this.http.post('https://api.spotify.com/v1/users/'+user_id+'/playlists', data)
+        .map(res => res.json())
         .subscribe(res => {
           resolve(res);
         }, (err) => {
           reject(err);
         });
     });
-  }// end function getChatByRoom
+  }// end function createPlaylist
 
 }// end class DashboardService

@@ -25,6 +25,12 @@ export class AuthService {
     return JSON.parse(this.window.sessionStorage['user'] || null);
   }// end function getUser
 
+  getUserID(){
+    // returns the spotify id of the user
+    var user = this.getUser();
+    return user['id'] || null
+  }// end function getUserID
+
   getToken(){
     var user = this.getUser();
     return user['access_token'] || null;
