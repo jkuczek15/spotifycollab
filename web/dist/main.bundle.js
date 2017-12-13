@@ -899,7 +899,7 @@ var DashboardComponent = (function () {
         this.dashboardService = dashboardService;
         this.routeControl = routeControl;
         this.http = http;
-        this.socket = io('http://localhost:4000');
+        this.socket = io('http://192.168.1.125:4000');
     }
     DashboardComponent.prototype.ngOnInit = function () {
         var self = this;

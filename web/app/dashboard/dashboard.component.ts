@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit {
   private joined: boolean;
   private roomName: string;
   private error: string;
-  private socket = io('http://localhost:4000');
+  private socket = io('http://192.168.1.125:4000');
 
   ngOnInit() {
     var self = this;
