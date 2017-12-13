@@ -26,6 +26,9 @@ io.on('connection', function (socket) {
       // the room exists, add this user
       var user = data.user;
       var room = data.room;
+      if(!rooms[room].users)
+        rooms[room].users = [];
+        
       rooms[room].users.push(user);
       socket.join(room);
 
