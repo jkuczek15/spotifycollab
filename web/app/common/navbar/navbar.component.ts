@@ -9,7 +9,6 @@ declare var $: any;
 // required variables for Spotify authentication
 var client_id = 'b6f40e9463ba406792aa0914d5c64bcb';  // Your client id
 var scope = 'user-read-private user-read-email user-library-read playlist-modify-private playlist-modify-public playlist-read-private';
-var redirect_uri = 'http://127.0.0.1:10010/user';    // Your redirect uri
 
 @Component({
   selector: 'app-navbar',
@@ -31,7 +30,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // Initially, the active tab will be the home link
     let self = this;
     this.activeNavID = 'home-link';
+    var redirect_uri = 'http://'+this.window.nativeWindow.location.hostname+':10010/user';    // Your redirect uri
 
+    console.log(this.window.nativeWindow.location);
     // Create the spotify authorization link
     this.spotify_login_url = 'https://accounts.spotify.com/authorize?' +
     querystring.stringify({

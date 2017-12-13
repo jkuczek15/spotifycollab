@@ -77,23 +77,16 @@ io.on('connection', function (socket) {
 
   socket.on('add-track', function(data) {
     var track_id = data.track_id;
-    var room = data.room;
-
+    var roomName = data.room;
+    
     // first find the host user's information
-    room = rooms[room];
+    var room = rooms[roomName];
     var host = room.users.find(function(user){
       return user.host === true;
     });
 
-    //console.log(room.queue);
-    
-
-    var url = 'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?position=0&uris=' + encodeURIComponent('spotify:track:'+track_id)
-    console.log(host);
-    console.log(url);
-
     var options = {
-      url:  url,
+      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?position=0&uris=' + encodeURIComponent('spotify:track:'+track_id),
       headers: {
           'Authorization': 'Bearer ' + host.access_token,
           'Content-Type' : 'application/json'
@@ -101,7 +94,17 @@ io.on('connection', function (socket) {
     };
 
     request.post(options, function(error, response, body){
-      console.log(body);
+      var options = {
+        url: 'https://api.spotify.com/v1/tracks/'+track_id,
+        headers: {
+          'Authorization': 'Bearer ' + host.access_token,
+          'Content-Type' : 'application/json'
+        }
+      }
+      request.get(options, function(error, response, body){
+        rooms[roomName].queue.tracks.items.push(JSON.parse(body));
+        io.sockets.in(roomName).emit('room-update', { room: rooms[roomName] });
+      });
     });
 
     //console.log(host);
