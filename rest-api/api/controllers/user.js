@@ -42,7 +42,9 @@ function get(req, res) {
     // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}
     var code = req.swagger.params.code.value;
 
-    var redirect_uri = "http://127.0.0.1:10010/user";
+    console.log(req);
+
+    var redirect_uri = "http://192.168.1.125:10010/user";
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
         form: {
@@ -76,7 +78,7 @@ function get(req, res) {
                 user['access_time'] = new Date().getTime() / 1000;
            
                 // redirect to the dashboard with the user data in the URL
-                res.redirect('http://127.0.0.1:3000/dashboard#' + querystring.stringify(user));
+                res.redirect('http://192.168.1.125:3000/dashboard#' + querystring.stringify(user));
             });
             
         } else {
