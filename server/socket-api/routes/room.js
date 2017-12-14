@@ -11,10 +11,8 @@ var request = require('request');
 
 server.listen(4000);
 
-// change later, just use some random string for now
-var HOST_ROOM = 'SPbKT7VNYB'
+// contains all our created (open) listening rooms
 var rooms = [];
-var hosts = [];
 
 // socket io
 io.on('connection', function (socket) {
@@ -26,13 +24,12 @@ io.on('connection', function (socket) {
       // the room exists, add this user
       var user = data.user;
       var room = data.room;
-      if(!rooms[room].users)
-        rooms[room].users = [];
-        
+
+      // add the new user to the room and subscribe
+      // the current user's socket to the room 
       rooms[room].users.push(user);
       socket.join(room);
 
-      console.log(rooms[room]);
       // send a message to all users in the room (including recently joined user)  
       io.sockets.in(room).emit('room-update', {room: rooms[room]});
     }else{
@@ -60,11 +57,7 @@ io.on('connection', function (socket) {
         users: [user],
         queue: { tracks: {} }
       };
-
-      // join the current user to the 'host' room, this makes it easy to 
-      // send commands to the host, it also gives us some kind of security (I think)
-      socket.join(HOST_ROOM);
-      
+     
       // join the current socket to the room and send message to all users in room
       socket.join(room);
       io.sockets.in(room).emit('room-update', { room: rooms[room], created: true });
@@ -74,12 +67,12 @@ io.on('connection', function (socket) {
   socket.on('create-queue', function(data) {
     var room = data.room;
     rooms[room].queue = data.queue;
-    
     io.sockets.in(room).emit('room-update', { room: rooms[room] });    
   });
 
   socket.on('add-track', function(data) {
-    var track_id = data.track_id;
+    // get the room and track from the emitted socket message
+    var track = data.track;
     var roomName = data.room;
     
     // first find the host user's information
@@ -88,42 +81,21 @@ io.on('connection', function (socket) {
       return user.host === true;
     });
 
+    // setup the request for adding a new track
     var options = {
-      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?position=0&uris=' + encodeURIComponent('spotify:track:'+track_id),
+      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?position=0&uris=' + encodeURIComponent('spotify:track:'+track.id),
       headers: {
           'Authorization': 'Bearer ' + host.access_token,
           'Content-Type' : 'application/json'
       }
     };
 
+    // make the request for adding a new track
     request.post(options, function(error, response, body){
-      var options = {
-        url: 'https://api.spotify.com/v1/tracks/'+track_id,
-        headers: {
-          'Authorization': 'Bearer ' + host.access_token,
-          'Content-Type' : 'application/json'
-        }
-      }
-      request.get(options, function(error, response, body){
-        rooms[roomName].queue.tracks.items.push(JSON.parse(body));
-        io.sockets.in(roomName).emit('room-update', { room: rooms[roomName] });
-      });
-    });
-
-    //console.log(host);
-
-    // only emit this event to the hosts
-    //io.sockets.in(room).in(HOST_ROOM).emit('add-track', { room: rooms[room] });    
+      rooms[roomName].queue.tracks.items.push(track);
+      io.sockets.in(roomName).emit('room-update', { room: rooms[roomName] });
+    });  
   });
-});
-
-app.post('/send/:room/', function(req, res) {
-  var room = req.params.room
-      message = req.body;
-
-  io.sockets.in(room).emit('message', { room: room, message: message });
-
-  res.end('message sent');
 });
 
 /*

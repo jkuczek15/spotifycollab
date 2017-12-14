@@ -8,14 +8,9 @@ declare var $: any;
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements AfterViewInit {
 
   constructor(private authentication: AuthService) { }
-
-  ngOnInit() {
-    console.log(environment);
-    //this.authentication.redirectIfLoggedIn('/dashboard');
-  }// end ngOninit function
 
   ngAfterViewInit() {
     // DOM ready function

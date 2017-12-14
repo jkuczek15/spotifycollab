@@ -26,6 +26,9 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 4. `(Optional)` Run a mongodb database server and connect to it with either the rest-api or the web server/socket.io. Usually the command is something like `./{path_to_mongodb}/Server/{version}/bin/mongod`
 5. `(Optinal)` Navigate to 'rest-api' folder and run `swagger project edit`, this allows us to edit and test our rest-api using swagger's slick interface.
 
+##  Environments
+To setup environment variables that are specific to the project, navigate to the folder `environments` under the main project directory. Some variables you can change here include: host, ports, and spotify web api configuration. 
+
 ## Development server
 
 Run `ng serve` to serve the live development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.

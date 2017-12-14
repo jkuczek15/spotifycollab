@@ -7,10 +7,6 @@ import 'rxjs/add/operator/filter';
 var querystring = require('querystring');
 declare var $: any;
 
-// required variables for Spotify authentication
-var client_id = 'b6f40e9463ba406792aa0914d5c64bcb';  // Your client id
-var scope = 'user-read-private user-read-email user-library-read playlist-modify-private playlist-modify-public playlist-read-private';
-
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -32,15 +28,13 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     let self = this;
     this.activeNavID = 'home-link';
     var redirect_uri = 'http://'+ environment.host + ':' + environment.api_port + '/user'; 
-
-    console.log(redirect_uri);
-    
+  
     // Create the spotify authorization link
     this.spotify_login_url = 'https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
-      client_id: client_id,
-      scope: scope,
+      client_id: environment.client_id,
+      scope: environment.scopes,
       redirect_uri: redirect_uri
     });
   

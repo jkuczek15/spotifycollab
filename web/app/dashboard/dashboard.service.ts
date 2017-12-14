@@ -9,7 +9,7 @@ export class DashboardService {
 
   getLibrary() {
     return new Promise((resolve, reject) => {
-      this.http.get('https://api.spotify.com/v1/me/tracks')
+      this.http.get('https://api.spotify.com/v1/me/tracks?limit=50')
         .map(res => res.json())
         .subscribe(res => {
           resolve(res);

@@ -103,10 +103,7 @@ export class DashboardComponent implements OnInit {
   }// end function initRoom
 
   addTrack(item){
-    //console.log(item);
-    var track_id = item.track.id;
-    
-    this.socket.emit('add-track', { room: this.room.name, track_id: track_id });
+    this.socket.emit('add-track', { room: this.room.name, track: item.track });
   }// end function addTrack
 
 }// end class DashboardComponent
