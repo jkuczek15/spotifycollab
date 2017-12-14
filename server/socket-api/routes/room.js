@@ -22,6 +22,38 @@ io.on('connection', function (socket) {
     socket.join(room);
   });
 
+  socket.on('unsubscribe', function(data){
+    var room = data.room;
+    socket.leave(room);
+  });
+
+  socket.on('leave-room', function(data) {
+    var room = data.room;
+    var user = data.user;
+    rooms.users = rooms.users.filter(function(u) {
+      return u.id !== user.id;
+    });
+    socket.leave(room);
+  });
+
+  socket.on('end-room', function(data) {
+    var room = data.room;
+
+    // delete this room from our stored rooms array
+    delete rooms[room];
+
+    // emit a null room update so all sockets know to
+    // stop displaying the room
+    io.sockets.in(room).emit('room-update', { room: null });
+    
+    // force all the sockets in the current room to leave the room
+    // tell all the joined sockets that this room doesnt exist anymore
+    var roomSockets = io.sockets.in(room).clients().sockets;
+    Object.keys(roomSockets).forEach(function(id) {
+        roomSockets[id].leave();
+    });
+  });
+
   socket.on('join-room', function(data) {
     // Initialize the room, first check
     // that the room doesn't exist yet
@@ -32,16 +64,18 @@ io.on('connection', function (socket) {
       var user = data.user;
       var room = rooms[roomName];
       
-      // add the new user to the room and subscribe
-      // the current user's socket to the room
+      // add the new user to the room
+      // first check if duplicate user exists
       var dupe = room.users.find(function(dupe_user){
         return dupe_user.id === user.id;
       });
       
       if(dupe === undefined){
         rooms[roomName].users.push(user);
-        socket.join(room);
       }// end if we don't have a duplicate user
+
+      // subscribe the current user's socket to the room
+      socket.join(room);
       
       // send a message to all users in the room (including recently joined user)  
       io.sockets.in(room).emit('room-update', {room: rooms[roomName]});
@@ -88,11 +122,10 @@ io.on('connection', function (socket) {
     var track = data.track;
     var roomName = data.room;
     
-    // first find the host user's information
+    // find the host user's information
+    // the host will always be the first user in the room
     var room = rooms[roomName];
-    var host = room.users.find(function(user){
-      return user.host === true;
-    });
+    var host = room.users[0];
 
     // setup the request for adding a new track
     var options = {

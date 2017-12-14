@@ -62,6 +62,32 @@ export class DashboardComponent implements OnInit {
     // create a handler for when the room is updated or changed
     this.socket.on('room-update', function (data) {
       // get the new room information
+      // first check if we have a null room update
+      if(data.room == null){
+        self.room = new RoomVM.Room;
+        self.joined = false;
+        self.isHost = false;
+        self.error = null;
+      }else{
+        self.room = data.room;
+        self.joined = true;
+        if(data.created) {
+          // this room was just created, initialize the room
+          // first create a playlist we will use
+          self.initRoom(self.room.name);
+        }// end if the room was recently created
+      }// end if the room is null
+     
+      // save the room data to the session in case they refresh the page
+      self.authentication.saveRoom(data.room);
+
+      console.log("Room update:", data);
+    });
+
+    this.socket.on('end-room', function (data) {
+      // get the new room information
+      self.socket.emit()
+      self.joined = false;
       self.room = data.room;
       self.joined = true;
 
@@ -101,6 +127,16 @@ export class DashboardComponent implements OnInit {
   hostRoom(){
     this.socket.emit('create-room', { user: this.authentication.getUser(), room: this.roomName });
   }// end function hostRoom
+
+  leaveRoom(){
+    if(this.isHost){
+      var message = 'end-room';  
+    }else{
+      var message = 'leave-room';
+    }// end if the user is a host
+
+    this.socket.emit(message, { user: this.authentication.getUser(), room: this.room.name });
+  }// end function leaveRoom
 
   initRoom(roomName){
     // function should be called as soon as host gets the OK to create a room

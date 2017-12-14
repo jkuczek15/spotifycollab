@@ -1,8 +1,13 @@
 <h1>
     Dashboard
     <span [hidden]="!joined"> - {{ room.name }}</span>
-    <span [hidden]="!joined"><button type="button" class="btn btn-danger">Leave</button></span>  
     <span [hidden]="!isHost"> - <button type="button" class="btn btn-success">Play</button></span>
+    <span [hidden]="!joined"> - 
+        <button type="button" class="btn btn-danger" (click)="leaveRoom()">
+            <span [hidden]="isHost">Leave</span>
+            <span [hidden]="!isHost">End Room</span>    
+        </button>
+    </span>
 </h1>
 
 <div class="row content">
