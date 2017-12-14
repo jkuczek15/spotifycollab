@@ -41,7 +41,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // Function to be called each time the route changes
     this.routeControl.onRouteChange(function(data) {
       self.loggedIn = self.authentication.loggedIn();
+      self.removeActive(self.activeNavID);
     });
+    //this.routeControl.routeChange();
+    self.loggedIn = self.authentication.loggedIn();
+    console.log(self.loggedIn);
   }// end ngOnInit function
 
   ngAfterViewInit(){

@@ -34,7 +34,9 @@ export class AppComponent implements OnInit {
     
     // TODO, this needs to be validated much better
     if(Object.keys(user).length !== 0 || user.constructor !== Object){
-      this.authentication.saveUser(user);
+      if(!this.authentication.loggedIn()){
+        this.authentication.saveUser(user);
+      }// end if the user is not logged in     
     }// end if we have valid hash params
     
     // List of URL's to determine if we are showing/hiding certain elements

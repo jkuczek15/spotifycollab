@@ -24,6 +24,17 @@ export class AuthService {
     return JSON.parse(this.window.sessionStorage['user'] || null);
   }// end function getUser
 
+  saveRoom(room){
+    var user = this.getUser();
+    user['room'] = room;
+    this.saveUser(user); 
+  }// end function setRoom
+
+  getRoom(){
+    var user = this.getUser();
+    return user['room'] || null;
+  }// end function getRoom
+
   getUserID(){
     // returns the spotify id of the user
     var user = this.getUser();
@@ -39,6 +50,18 @@ export class AuthService {
     // determine if the current user is logged in
     return this.getUser() != null;
   }// end function loggedIn
+
+  isHost(room){
+    var host = this.getHost(room);
+    return this.loggedIn() && host.id == this.getUser().id;
+  }// end function isHost
+
+  getHost(room){
+    var host = room.users.find(function(user){
+      return user.host === true;
+    });
+    return host || null;
+  }// end function isHost
 
   logout(){
     // log the user out by removing them from session

@@ -1,7 +1,12 @@
-<h1>Dashboard<span [hidden]="!joined"> - {{ room.name }}</span></h1>
+<h1>
+    Dashboard
+    <span [hidden]="!joined"> - {{ room.name }}</span>
+    <span [hidden]="!joined"><button type="button" class="btn btn-danger">Leave</button></span>  
+    <span [hidden]="!isHost"> - <button type="button" class="btn btn-success">Play</button></span>
+</h1>
 
 <div class="row content">
-    <div class="container-fluid">
+    <div class="container">
         <div class="col-sm-6" [hidden]="joined">
             <div class="panel panel-primary">
                 <div class="panel-heading">Sparty</div>

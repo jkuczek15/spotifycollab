@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit {
 
   // the user data from spotify (includes access token)
   public room: any;
+  private isHost: boolean;
   private library: any;
   private queue: any;
   private joined: boolean;
@@ -33,7 +34,6 @@ export class DashboardComponent implements OnInit {
   private socket = io('http://'+ environment.host + ':' + environment.socket_port);
 
   ngOnInit() {
-    console.log(environment);
     var self = this;
     self.room = new RoomVM.Room;
     self.library = [];
@@ -44,35 +44,54 @@ export class DashboardComponent implements OnInit {
       self.error = data;
     });
 
+    // check if we have room information stored in the session,
+    // if we do, we should use this before displaying the 'join' form
+    var room = self.authentication.getRoom();
+    
+    if(room != null){
+      self.room = room;
+      self.joined = true;
+      self.isHost = this.authentication.isHost(self.room);
+      self.queue = room.queue;
+
+      // subscribe the user to the room since refreshing the page
+      // causes the user to get a new socket connection
+      self.socket.emit('subscribe', { room: self.room.name });
+    }// end if the session room is not null
+
     // create a handler for when the room is updated or changed
     this.socket.on('room-update', function (data) {
-      console.log("Room update:", data);
+      // get the new room information
       self.room = data.room;
       self.joined = true;
+
+      // save the room data to the session in case they refresh the page
+      self.authentication.saveRoom(self.room);
 
       if(data.created) {
         // this room was just created, initialize the room
         // first create a playlist we will use
         self.initRoom(self.room.name);
       }// end if the room was recently created
+
+      console.log("Room update:", data);
     });
 
     this.getLibrary();
   }// end ngOnInit function
 
   getLibrary() {
-      var user = this.authentication.getUser();
-      var self = this;
+    var user = this.authentication.getUser();
+    var self = this;
 
-      // Grab our playlist data using the service
-      this.dashboardService.getLibrary().then((data: any) => {
-        this.library = data.items;
-        console.log(this.library);
-      }, (err) => {
-        if(err.status !== 401){
-          console.log(err);
-        }// end if not unauthorized error
-      });
+    // Grab our playlist data using the service
+    this.dashboardService.getLibrary().then((data: any) => {
+      this.library = data.items;
+    }, (err) => {
+      if(err.status !== 401){
+        console.log(err);
+      }// end if not unauthorized error
+    });
   }// end function getPlaylists()
 
   joinRoom(){
@@ -95,6 +114,7 @@ export class DashboardComponent implements OnInit {
       // that the queue has been created
       this.queue = data;
       this.socket.emit('create-queue', { room: this.room.name, queue: data });
+      this.isHost = true;
     }, (err) => {
       if(err.status !== 401){
         console.log(err);

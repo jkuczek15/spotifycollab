@@ -11,27 +11,40 @@ var request = require('request');
 
 server.listen(4000);
 
-// contains all our created (open) listening rooms
-var rooms = [];
+// contains all our open listening rooms
+var rooms  = {};
 
 // socket io
 io.on('connection', function (socket) {
-  
+
+  socket.on('subscribe', function(data){
+    var room = data.room;
+    socket.join(room);
+  });
+
   socket.on('join-room', function(data) {
     // Initialize the room, first check
     // that the room doesn't exist yet
-    if(data.room in rooms){
+    var roomName = data.room
+    
+    if(roomName in rooms){
       // the room exists, add this user
       var user = data.user;
-      var room = data.room;
-
+      var room = rooms[roomName];
+      
       // add the new user to the room and subscribe
-      // the current user's socket to the room 
-      rooms[room].users.push(user);
-      socket.join(room);
-
+      // the current user's socket to the room
+      var dupe = room.users.find(function(dupe_user){
+        return dupe_user.id === user.id;
+      });
+      
+      if(dupe === undefined){
+        rooms[roomName].users.push(user);
+        socket.join(room);
+      }// end if we don't have a duplicate user
+      
       // send a message to all users in the room (including recently joined user)  
-      io.sockets.in(room).emit('room-update', {room: rooms[room]});
+      io.sockets.in(room).emit('room-update', {room: rooms[roomName]});
     }else{
       // send an error back to the socket that sent this request
       socket.emit('error-message', "Room does not exist yet. Click 'host' to start one now!");      

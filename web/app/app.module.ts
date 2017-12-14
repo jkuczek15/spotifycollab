@@ -31,7 +31,6 @@ import { ChatComponent } from './common/chat/chat.component';
 // Router Components
 import { DashboardComponent } from './dashboard/dashboard.component';
 
-
 // Pipes
 import { DerpPipe } from '../includes/derp.pipe';
 
