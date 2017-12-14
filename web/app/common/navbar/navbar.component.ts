@@ -17,7 +17,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   // Initialize view model variables
   public loggedIn;
   private activeNavID;
-  private spotify_login_url;
+  private spotifyLoginUrl;
+  private currentPath;
 
   constructor(private authentication: AuthService,
               private routeControl: RouteHelper,
@@ -27,30 +28,30 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // Initially, the active tab will be the home link
     let self = this;
     this.activeNavID = 'home-link';
-    var redirect_uri = 'http://'+ environment.host + ':' + environment.api_port + '/user'; 
+    this.currentPath = this.window.nativeWindow.location.pathname; 
+    var redirect_uri = 'http://'+ environment.host + ':' + environment.api_port + '/user';
   
     // Create the spotify authorization link
-    this.spotify_login_url = 'https://accounts.spotify.com/authorize?' +
+    this.spotifyLoginUrl = 'https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
       client_id: environment.client_id,
       scope: environment.scopes,
       redirect_uri: redirect_uri
     });
-  
+    
     // Function to be called each time the route changes
     this.routeControl.onRouteChange(function(data) {
       self.loggedIn = self.authentication.loggedIn();
-      self.removeActive(self.activeNavID);
+      self.currentPath = self.window.nativeWindow.location.pathname;
+      if(self.currentPath !== '/'){
+        self.removeActive(self.activeNavID);
+      }// end if on the index page
     });
-    //this.routeControl.routeChange();
-    self.loggedIn = self.authentication.loggedIn();
-    console.log(self.loggedIn);
   }// end ngOnInit function
 
   ngAfterViewInit(){
-    let currentPath = this.window.nativeWindow.location.pathname
-    if(currentPath == '/'){
+    if(this.currentPath == '/'){
       // on the home page, add the active class on load
       this.addActive(this.activeNavID);
     }// end if current page is the index

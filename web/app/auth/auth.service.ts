@@ -65,7 +65,7 @@ export class AuthService {
 
   logout(){
     // log the user out by removing them from session
-    window.sessionStorage.removeItem('user');
+    this.window.sessionStorage.removeItem('user');
     this.routeControl.routeChange();
     this.router.navigateByUrl('/');
   }// end function logout
