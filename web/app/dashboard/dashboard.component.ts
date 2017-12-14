@@ -32,8 +32,9 @@ export class DashboardComponent implements OnInit {
   private roomName: string;
   private error: string;
   private socket = io('http://'+ environment.host + ':' + environment.socket_port);
-
+  
   ngOnInit() {
+    this.socket.heartbeatTimeout = 20000; // reconnect if not received heartbeat for 20 seconds
     var self = this;
     self.room = new RoomVM.Room;
     self.library = [];
@@ -99,8 +100,6 @@ export class DashboardComponent implements OnInit {
         // first create a playlist we will use
         self.initRoom(self.room.name);
       }// end if the room was recently created
-
-      console.log("Room update:", data);
     });
 
     this.getLibrary();
@@ -157,6 +156,24 @@ export class DashboardComponent implements OnInit {
       }// end if not unauthorized error
     });
   }// end function initRoom
+
+  play(){
+    // start playing the user's playlist queue from the first song
+    var data = {
+      context_uri: this.room.queue.uri,
+      offset: {"position" : 0}
+    };
+
+    this.dashboardService.play(data).then((data: any) => {
+      // load the queue into the client side and emit a socket message telling everyone
+      // that the queue has been created
+      console.log(data);
+    }, (err) => {
+      if(err.status !== 401){
+        console.log(err);
+      }// end if not unauthorized error
+    });
+  }// end function play
 
   addTrack(item){
     this.socket.emit('add-track', { room: this.room.name, track: item.track });

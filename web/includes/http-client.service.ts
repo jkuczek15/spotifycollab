@@ -39,4 +39,15 @@ export class HttpClient {
     });
   }// end function post
 
+  put(url, data, cors=false) {
+    let headers = new Headers();
+    this.createAuthorizationHeader(headers);
+    if(cors){
+      this.createCORSHeader(headers);
+    }// end if enabling CORS
+    return this.http.put(url, data, {
+      headers: headers
+    });
+  }// end function post
+
 }// end class HttpClient

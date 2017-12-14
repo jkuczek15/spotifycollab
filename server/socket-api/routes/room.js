@@ -38,9 +38,8 @@ io.on('connection', function (socket) {
 
   socket.on('end-room', function(data) {
     var room = data.room;
-
-    // delete this room from our stored rooms array
-    delete rooms[room];
+    var host = rooms[room].users[0];
+    var queue = rooms[room].queue;
 
     // emit a null room update so all sockets know to
     // stop displaying the room
@@ -52,6 +51,23 @@ io.on('connection', function (socket) {
     Object.keys(roomSockets).forEach(function(id) {
         roomSockets[id].leave();
     });
+
+    // send a request to spotify to delete the playlist
+    // we need the host's access token
+    var options = {
+      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+queue.id+'/followers',
+      headers: {
+          'Authorization': 'Bearer ' + host.access_token
+      }
+    };
+
+    // send the delete request
+    request.delete(options, function(error, response, body){
+      console.log('Successful delete');
+    });  
+
+    // delete this room from our stored rooms array
+    delete rooms[room];
   });
 
   socket.on('join-room', function(data) {
@@ -129,7 +145,7 @@ io.on('connection', function (socket) {
 
     // setup the request for adding a new track
     var options = {
-      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?position=0&uris=' + encodeURIComponent('spotify:track:'+track.id),
+      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?uris=' + encodeURIComponent('spotify:track:'+track.id),
       headers: {
           'Authorization': 'Bearer ' + host.access_token,
           'Content-Type' : 'application/json'
