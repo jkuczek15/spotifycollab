@@ -16,6 +16,7 @@ var request = require('request');
 var User = require('../models/User');
 var secret = require('../secret');
 var querystring = require('querystring');
+var environment = require('../../../environments/environment');
 
 /*
  Once you 'require' a module you can reference the things that it exports.  These are defined in module.exports.
@@ -42,9 +43,7 @@ function get(req, res) {
     // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}
     var code = req.swagger.params.code.value;
 
-    console.log(req);
-
-    var redirect_uri = "http://192.168.1.125:10010/user";
+    var redirect_uri = "http://" + environment.host + ":" + environment.api_port + "/user";
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
         form: {
@@ -78,7 +77,7 @@ function get(req, res) {
                 user['access_time'] = new Date().getTime() / 1000;
            
                 // redirect to the dashboard with the user data in the URL
-                res.redirect('http://192.168.1.125:3000/dashboard#' + querystring.stringify(user));
+                res.redirect('http://' + environment.host + ':' + environment.ws_port + '/dashboard#' + querystring.stringify(user));
             });
             
         } else {

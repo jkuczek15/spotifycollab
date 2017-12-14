@@ -3,7 +3,6 @@ import { Http, Headers } from '@angular/http';
 import { WindowService } from '../../includes/window.service';
 import { Router } from '@angular/router';
 import { RouteHelper } from '../../includes/utils/route-helper.module'
-import { environment } from '../../environments/environment';
 import 'rxjs/add/operator/map';
 
 @Injectable()
@@ -43,10 +42,6 @@ export class AuthService {
 
   logout(){
     // log the user out by removing them from session
-    if(!environment.production){
-      this.debugLogout = true;
-    }// end if we are not in production environment
-
     window.sessionStorage.removeItem('user');
     this.routeControl.routeChange();
     this.router.navigateByUrl('/');

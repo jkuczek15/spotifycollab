@@ -8,6 +8,7 @@ import * as LibraryVM from '../../includes/viewModels/Library.js';
 import * as RoomVM from '../../includes/viewModels/Room.js';
 import * as io from "socket.io-client";
 import { last } from '@angular/router/src/utils/collection';
+import * as environment from '../../../environments/environment';
 declare var $: any;
 
 @Component({
@@ -29,9 +30,10 @@ export class DashboardComponent implements OnInit {
   private joined: boolean;
   private roomName: string;
   private error: string;
-  private socket = io('http://192.168.1.125:4000');
+  private socket = io('http://'+ environment.host + ':' + environment.socket_port);
 
   ngOnInit() {
+    console.log(environment);
     var self = this;
     self.room = new RoomVM.Room;
     self.library = [];

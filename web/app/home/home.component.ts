@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
+import * as environment from '../../../environments/environment';
 declare var $: any;
 
 @Component({
@@ -12,6 +13,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   constructor(private authentication: AuthService) { }
 
   ngOnInit() {
+    console.log(environment);
     //this.authentication.redirectIfLoggedIn('/dashboard');
   }// end ngOninit function
 

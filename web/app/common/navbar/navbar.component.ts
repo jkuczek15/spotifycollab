@@ -1,7 +1,8 @@
 import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { RouteHelper } from '../../../includes/utils/route-helper.module';
-import { WindowService } from '../../../includes/window.service'
+import { WindowService } from '../../../includes/window.service';
+import * as environment from '../../../../environments/environment';
 import 'rxjs/add/operator/filter';
 var querystring = require('querystring');
 declare var $: any;
@@ -30,9 +31,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // Initially, the active tab will be the home link
     let self = this;
     this.activeNavID = 'home-link';
-    var redirect_uri = 'http://'+this.window.nativeWindow.location.hostname+':10010/user';    // Your redirect uri
+    var redirect_uri = 'http://'+ environment.host + ':' + environment.api_port + '/user'; 
 
-    console.log(this.window.nativeWindow.location);
+    console.log(redirect_uri);
+    
     // Create the spotify authorization link
     this.spotify_login_url = 'https://accounts.spotify.com/authorize?' +
     querystring.stringify({
