@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 
 // Initalize the express application
@@ -9,6 +10,17 @@ var app = express();
  
 // Initialize CORs for cross-domain origin requests
 var cors = require('cors');
+
+// Connect to mongoDB
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/database', {
+    useMongoClient: true
+}).then(() =>  console.log('MongoDB Connection Successful'))
+  .catch((err) => console.error(err));
+
+var config = {
+  appRoot: __dirname // required config
+};
 
 // Enable preflight requests
 // Include before other routes

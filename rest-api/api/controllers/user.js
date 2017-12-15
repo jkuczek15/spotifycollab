@@ -13,7 +13,6 @@
 var util = require('util');
 var mongoose = require('mongoose');
 var request = require('request'); 
-var User = require('../models/User');
 var secret = require('../secret');
 var querystring = require('querystring');
 var environment = require('../../../environments/environment');
@@ -31,7 +30,7 @@ var environment = require('../../../environments/environment');
   we specify that in the exports of this module that 'hello' maps to the function named 'hello'
  */
 module.exports = {
-  get: get
+  get_user: get
 };
 
 /*
@@ -56,7 +55,7 @@ function get(req, res) {
         },
         json: true
     };
-  
+
     request.post(authOptions, function(error, response, access) {
 
         if (!error && response.statusCode === 200) {
@@ -75,7 +74,7 @@ function get(req, res) {
                 user['refresh_token'] = access.refresh_token;
                 user['expires_in'] = access.expires_in;
                 user['access_time'] = new Date().getTime() / 1000;
-           
+            
                 // redirect to the dashboard with the user data in the URL
                 res.redirect('http://' + environment.host + ':' + environment.ws_port + '/dashboard#' + querystring.stringify(user));
             });

@@ -26,7 +26,7 @@ paths:
     get:
       description: Authenticates the user using Spotify Authorization Flow and redirects them to a URL defined from our API function. 
       # used as the method name of the controller
-      operationId: get
+      operationId: get_user
       parameters:
         - name: code
           in: query

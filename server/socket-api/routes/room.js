@@ -7,6 +7,8 @@ var Room = require('../models/Room.js');
 var methodOverride = require('method-override');
 var cors = require('cors');
 var request = require('request');
+var environment = require('../../../environments/environment');
+var Room = require('../models/Room');
 
 // initialize socket.io with custom settings
 const io = require('socket.io')(server, {
@@ -16,158 +18,180 @@ const io = require('socket.io')(server, {
   cookie: false
 });
 
-server.listen(4000);
-
-// contains all our open listening rooms
-var rooms  = {};
-
 // socket io
 io.on('connection', function (socket) {
-
+  
   socket.on('subscribe', function(data){
-    var room = data.room;
-    if(rooms[room]){
-      socket.join(room);
-    }// end if the room exists
+    var roomName = data.roomName;
+    Room.findOne({ name: roomName }, function(error, room) {
+      if(error) throw error;
+      if(room != null){
+        socket.join(room.name);
+      }// end if room exists
+    });
   });
 
   socket.on('unsubscribe', function(data){
-    var room = data.room;
-    socket.leave(room);
+    var roomName = data.roomName;
+    socket.leave(roomName);
   });
 
   socket.on('leave-room', function(data) {
     var room = data.room;
     var user = data.user;
-    rooms.users = rooms.users.filter(function(u) {
-      return u.id !== user.id;
-    });
-    socket.leave(room);
+
+    // update the users property of the room to remove the current 
+    // user from the room
+    Room.update(
+      { name: room.name }, 
+      { $pull: { "users": user } },
+      function(error, body) {
+        // update was successful, emit a socket message with new track added
+        room.users = room.users.filter(function(u) {
+          return u.id !== user.id;
+        });
+        socket.emit('room-update', { room: null });
+        socket.leave(room.name);
+        io.sockets.in(room.name).emit('room-update', { room: room });
+      }// end callback function
+    );
   });
 
   socket.on('end-room', function(data) {
     var room = data.room;
-    var host = rooms[room].users[0];
-    var queue = rooms[room].queue;
+    var host = room.users[0];
+    var queue = room.queue;
 
-    // emit a null room update so all sockets know to
-    // stop displaying the room
-    io.sockets.in(room).emit('room-update', { room: null });
-    
-    // force all the sockets in the current room to leave the room
-    // tell all the joined sockets that this room doesnt exist anymore
-    var roomSockets = io.sockets.in(room).clients().sockets;
-    Object.keys(roomSockets).forEach(function(id) {
-        roomSockets[id].leave();
+    // delete the room from the Mongo database
+    Room.remove({ name: room.name }, function(error, body) { 
+      // emit a null room update so all sockets know to
+      // stop displaying the room
+      io.sockets.in(room.name).emit('room-update', { room: null });
+      
+      // send a request to spotify to delete the playlist
+      // we need the host's access token
+      var options = {
+        url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+queue.id+'/followers',
+        headers: {
+            'Authorization': 'Bearer ' + host.access_token
+        }
+      };
+
+      // send the delete request
+      request.delete(options, function(error, response, body){
+        console.log('Successfully deleted playlist.');
+      });
     });
-
-    // send a request to spotify to delete the playlist
-    // we need the host's access token
-    var options = {
-      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+queue.id+'/followers',
-      headers: {
-          'Authorization': 'Bearer ' + host.access_token
-      }
-    };
-
-    // send the delete request
-    request.delete(options, function(error, response, body){
-      console.log('Successful delete');
-    });  
-
-    // delete this room from our stored rooms array
-    delete rooms[room];
   });
 
   socket.on('join-room', function(data) {
-    // Initialize the room, first check
-    // that the room doesn't exist yet
-    var roomName = data.room
-    
-    if(roomName in rooms){
-      // the room exists, add this user
-      var user = data.user;
-      var room = rooms[roomName];
-      
-      // add the new user to the room
-      // first check if duplicate user exists
-      var dupe = room.users.find(function(dupe_user){
-        return dupe_user.id === user.id;
-      });
-      
-      if(dupe === undefined){
-        rooms[roomName].users.push(user);
-      }// end if we don't have a duplicate user
+    var user = data.user;
+    var roomName = data.roomName;
 
-      // subscribe the current user's socket to the room
-      socket.join(room);
-      
-      // send a message to all users in the room (including recently joined user)  
-      io.sockets.in(room).emit('room-update', {room: rooms[roomName]});
-    }else{
-      // send an error back to the socket that sent this request
-      socket.emit('error-message', "Room does not exist yet. Click 'host' to start one now!");      
-    }// end if the room hasn't been created
+    // check if a room exists before we join it
+    Room.findOne({ name: roomName }, function(error, room) {
+      if(error) throw error;
+      if(room == null){
+        // send an error back to the socket that sent this request
+        socket.emit('error-message', "Room does not exist yet. Click 'host' to start one now!");
+      }else{
+        // subscribe the current user's socket to the room
+        //console.log(room);
+        room.users.push(user);
+        room.save(function(error, room){
+          socket.join(room.name);
+          io.sockets.in(room.name).emit('room-update', {room: room});
+        });
+      }// end if room is null
+    });
   });
 
   socket.on('create-room', function(data) {
-    // Initialize the room, first check
-    // that the room doesn't exist yet
-    if(data.room in rooms){
-      // send an error back to the socket that sent this request
-      socket.emit('error-message', "Room already created");
-    }else{
-      // the room does not exist, create it now
-      var room = data.room;
-      var user = data.user;
+    // create a new room based on parameters sent to us
+    var roomName = data.roomName;
+    var user = data.user;
 
-      // set the host variable to true since this is the user who created the room
-      // initialize the room with an empty play queue
-      user['host'] = true;
-      rooms[room] = {
-        name: room,
-        users: [user],
-        queue: { tracks: {} }
-      };
-     
-      // join the current socket to the room and send message to all users in room
-      socket.join(room);
-      io.sockets.in(room).emit('room-update', { room: rooms[room], created: true });
-    }// end if the room hasn't been created
-  });
+    // set the host variable to true since this is the user who created the room
+    // initialize the room with an empty play queue
+    user['host'] = true;
+    var room = {
+      name: roomName,
+      users: [user],
+      queue: { tracks: {'1': '1'} }
+    };
 
-  socket.on('create-queue', function(data) {
-    var room = data.room;
-    rooms[room].queue = data.queue;
-    io.sockets.in(room).emit('room-update', { room: rooms[room] });    
+    // create the room and save it to MongoDB
+    var dbRoom = new Room(room);
+    var error = null;
+    dbRoom.save(function(error, room) {
+      if(error){
+        // there was an error when inserting data into MongoDB
+        // currently this can only be a duplicate key error
+        socket.emit('error-message', "Room already created");
+      }else{
+        // there was no error, we've successful created the room
+        // and saved it to the database, join the room and emit 
+        // a room update message to the host client
+        // setup the request for adding a new playlist
+        var options = {
+          url:  'https://api.spotify.com/v1/users/'+user['id']+'/playlists',
+          headers: {
+            'Authorization': 'Bearer ' + user['access_token'],
+            'Content-Type' : 'application/json'
+          },
+          json: {
+            description: "Boom room playlist",
+            public: false,
+            name: "Boom Room - " + room.name
+          }
+        };
+
+        // make the request for adding a new playlist
+        // upon completion of the request, store the playlist information
+        // in the database and return a socket message to the host who 
+        // created the room
+        request.post(options, function(error, response, queue){
+          room.queue = queue;
+          room.save(function(error, room){
+            socket.join(room.name);
+            socket.emit('room-update', { room: room, created: true });
+          });
+        });  
+      }// end if error
+    });
   });
 
   socket.on('add-track', function(data) {
-    // get the room and track from the emitted socket message
     var track = data.track;
-    var roomName = data.room;
-    
-    // find the host user's information
-    // the host will always be the first user in the room
-    var room = rooms[roomName];
+    var room = data.room;
+
+    // host will always be the first person in the room
     var host = room.users[0];
 
     // setup the request for adding a new track
     var options = {
       url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?uris=' + encodeURIComponent('spotify:track:'+track.id),
       headers: {
-          'Authorization': 'Bearer ' + host.access_token,
-          'Content-Type' : 'application/json'
+        'Authorization': 'Bearer ' + host.access_token,
+        'Content-Type' : 'application/json'
       }
     };
 
     // make the request for adding a new track
-    request.post(options, function(error, response, body){
-      rooms[roomName].queue.tracks.items.push(track);
-      io.sockets.in(roomName).emit('room-update', { room: rooms[roomName] });
-    });  
+    request.post(options, function(error, response, body) {
+      Room.update(
+        { name: room.name }, 
+        { $push: { "queue.tracks.items": track } },
+        function(error, body) {
+          // update was successful, emit a socket message with new track added
+          room.queue.tracks.items.push(track);
+          io.sockets.in(room.name).emit('room-update', { room: room });
+        }// end callback function
+      );
+    });
   });
 });
+
 
 /*
 We only need this if we want to make direct API requests from the client
@@ -185,5 +209,7 @@ app.get('/rooms', cors(), function (req, res, next) {
   res.json(rooms);
 });
 */
+
+server.listen(4000);
 
 module.exports = router;

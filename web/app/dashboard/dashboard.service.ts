@@ -64,16 +64,4 @@ export class DashboardService {
     });
   }// end function currentlyPlaying
 
-  createPlaylist(user_id, data){
-    return new Promise((resolve, reject) => {
-      this.http.post('https://api.spotify.com/v1/users/'+user_id+'/playlists', data)
-        .map(res => res.json())
-        .subscribe(res => {
-          resolve(res);
-        }, (err) => {
-          reject(err);
-        });
-    });
-  }// end function createPlaylist
-
 }// end class DashboardService
