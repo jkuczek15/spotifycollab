@@ -1,0 +1,11 @@
+.music-player{
+    background-color: black;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 15px 15px 15px 15px;
+    border-radius: 10px;
+}
+
+.green{
+    background-color: #23CF5F;
+}

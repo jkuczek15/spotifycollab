@@ -1,17 +1,37 @@
-<h1>
-    Dashboard
-    <span [hidden]="!joined"> - {{ room.name }}</span>
-    <span [hidden]="!isHost"> - <button type="button" class="btn btn-success" (click)="play()">Play</button></span>
-    <span [hidden]="!joined"> - 
-        <button type="button" class="btn btn-danger" (click)="leaveRoom()">
-            <span [hidden]="isHost">Leave</span>
-            <span [hidden]="!isHost">End Room</span>    
-        </button>
-    </span>
-</h1>
-
+<div class="container">
+<div class="row">
+    <div class="col-xs-8">
+        <h1>
+            Dashboard
+            <span [hidden]="!joined"> - {{ room.name }}</span>
+            <!--<span [hidden]="!isHost"> - <button type="button" class="btn btn-success" (click)="play()">Play</button></span>-->
+            <span [hidden]="!joined"> - 
+                <button type="button" class="btn btn-danger" (click)="leaveRoom()">
+                    <span [hidden]="isHost">Leave</span>
+                    <span [hidden]="!isHost">End Room</span>    
+                </button>
+            </span>
+        </h1>
+    </div>
+    <div class="col-xs-4">
+        <div class="music-player" [hidden]="!isHost">
+            <span class="glyphicon glyphicon-backward"></span>
+            <span [hidden]="isPlaying">
+                <span class="glyphicon glyphicon-play" style="margin-left: 10px" (click)="play()"></span>
+            </span>
+            <span [hidden]="!isPlaying">
+                <span class="glyphicon glyphicon-pause" style="margin-left: 10px" (click)="pause()"></span>
+            </span>
+            <span class="glyphicon glyphicon-forward" style="margin-left: 10px" (click)="nextTrack()"></span>
+        </div>
+    </div>
+</div>
+<div style="background-color: black;">
+    <div class="row">
+        <div class="col-sm-12"></div>
+    </div>
+</div>
 <div class="row content">
-    <div class="container">
         <div class="col-sm-6" [hidden]="joined">
             <div class="panel panel-primary">
                 <div class="panel-heading">Sparty</div>
@@ -42,15 +62,15 @@
 
         <div [hidden]="!joined">
             <div class="row">
-                <div class="col-sm-2">
+                <!--<div class="col-sm-2">
                     <h4>Users:</h4>
                     <ul>
                         <li *ngFor="let user of room.users"> 
                             {{ user.display_name }} <span *ngIf="user.host"> - Host</span>
                         </li>
                     </ul>
-                </div>
-                <div class="col-sm-4">
+                </div>-->
+                <div class="col-sm-6">
                     <h4>Queue:</h4>
                     <div class="pre-scrollable" style="max-height: 70vh">
                         <table class="table">
@@ -63,9 +83,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let track of room.queue.tracks.items; let i = index">
+                                    <tr *ngFor="let track of room.queue.tracks.items; let i = index" [ngClass]="{green: track.id == currentlyPlaying.id}">
                                         <td>{{ i+1 }}</td>
-                                        <td>{{ track.name }}</td>
+                                        <td><span >{{ track.name }}</span></td>
                                         <td>{{ track.artists[0].name }}</td>
                                         <td>{{ track.album.name }}</td>
                                     </tr>

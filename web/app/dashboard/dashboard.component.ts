@@ -4,6 +4,7 @@ import { DashboardService } from './dashboard.service'
 import { HttpClient } from '../../includes/http-client.service';
 import { DerpPipe } from '../../includes/derp.pipe';
 import { RouteHelper } from '../../includes/utils/route-helper.module';
+import { Observable } from 'rxjs/Rx';
 import * as LibraryVM from '../../includes/viewModels/Library.js';
 import * as RoomVM from '../../includes/viewModels/Room.js';
 import * as io from "socket.io-client";
@@ -31,6 +32,8 @@ export class DashboardComponent implements OnInit {
   private joined: boolean;
   private roomName: string;
   private error: string;
+  private isPlaying: boolean;
+  private currentlyPlaying: any;
   private socket = io('http://'+ environment.host + ':' + environment.socket_port);
   
   ngOnInit() {
@@ -38,6 +41,9 @@ export class DashboardComponent implements OnInit {
     var self = this;
     self.room = new RoomVM.Room;
     self.library = [];
+    self.currentlyPlaying = {};
+
+    this.isPlaying = false;
 
     // create a handler for error messages, updating them as the server passes them back
     // handler to be called upon return of an error message from Socket.io
@@ -102,6 +108,22 @@ export class DashboardComponent implements OnInit {
       }// end if the room was recently created
     });
 
+    // set up an interval function to run and request playlist data from Spotify
+    // this is the only way to ensure that we have the same playback data as Spotify
+    Observable.interval(5000).subscribe(x => {
+      this.dashboardService.currentlyPlaying().then((data: any) => {
+        // successful response, music should now be playing via
+        // the spotify application
+        this.updatePlayback(data);
+      }, (err) => {
+        if(err.status !== 401){
+          console.log(err);
+        }// end if not unauthorized error
+      });
+    });
+
+    
+
     this.getLibrary();
   }// end ngOnInit function
 
@@ -157,7 +179,16 @@ export class DashboardComponent implements OnInit {
     });
   }// end function initRoom
 
-  play(){
+  updatePlayback(data) {
+    this.isPlaying = data.is_playing;
+
+    this.currentlyPlaying = data.item;
+    
+    
+    console.log(data);
+  }// end function updatePlayback
+
+  play(event){
     // start playing the user's playlist queue from the first song
     var data = {
       context_uri: this.room.queue.uri,
@@ -165,8 +196,9 @@ export class DashboardComponent implements OnInit {
     };
 
     this.dashboardService.play(data).then((data: any) => {
-      // load the queue into the client side and emit a socket message telling everyone
-      // that the queue has been created
+      // successful response, music should now be playing via
+      // the spotify application
+      this.isPlaying = true;
       console.log(data);
     }, (err) => {
       if(err.status !== 401){
@@ -174,6 +206,31 @@ export class DashboardComponent implements OnInit {
       }// end if not unauthorized error
     });
   }// end function play
+
+  pause(event){
+    this.dashboardService.pause().then((data: any) => {
+      // successful response, music should now be playing via
+      // the spotify application
+      this.isPlaying = false;
+      console.log(data);
+    }, (err) => {
+      if(err.status !== 401){
+        console.log(err);
+      }// end if not unauthorized error
+    });
+  }// end function pause
+  
+  nextTrack(event){
+    this.dashboardService.nextTrack().then((data: any) => {
+      // successful response, music should now be playing via
+      // the spotify application
+      console.log(data);
+    }, (err) => {
+      if(err.status !== 401){
+        console.log(err);
+      }// end if not unauthorized error
+    });
+  }// end function nextTrack
 
   addTrack(item){
     this.socket.emit('add-track', { room: this.room.name, track: item.track });

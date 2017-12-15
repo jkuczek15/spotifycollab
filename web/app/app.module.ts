@@ -14,7 +14,6 @@ import { Ng2PageScrollModule } from 'ng2-page-scroll';
 
 // Services
 import { AuthService } from './auth/auth.service';
-import { ChatService } from './common/chat/chat.service';
 import { HttpClient } from '../includes/http-client.service'
 import { WindowService } from '../includes/window.service'
 import { DashboardService } from './dashboard/dashboard.service';
@@ -26,7 +25,6 @@ import { FooterComponent } from './common/footer/footer.component';
 import { SidebarLeftComponent } from './common/sidebar-left/sidebar-left.component';
 import { SidebarRightComponent } from './common/sidebar-right/sidebar-right.component';
 import { HomeComponent } from './home/home.component';
-import { ChatComponent } from './common/chat/chat.component';
 
 // Router Components
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -55,7 +53,6 @@ appRoutes.push({
 @NgModule({
   declarations: [
     AppComponent,
-    ChatComponent,
     NavbarComponent,
     FooterComponent,
     SidebarLeftComponent,
@@ -79,7 +76,6 @@ appRoutes.push({
   ],
   providers: [
     AuthService,
-    ChatService,
     DashboardService,
     HttpClient,
     WindowService

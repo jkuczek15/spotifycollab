@@ -3,11 +3,18 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var app = express();
 var server = require('http').createServer(app);
-var io = require('socket.io')(server);
 var Room = require('../models/Room.js');
 var methodOverride = require('method-override');
 var cors = require('cors');
 var request = require('request');
+
+// initialize socket.io with custom settings
+const io = require('socket.io')(server, {
+  serveClient: false,
+  pingInterval: 10000,
+  pingTimeout: 80000,
+  cookie: false
+});
 
 server.listen(4000);
 
@@ -19,7 +26,9 @@ io.on('connection', function (socket) {
 
   socket.on('subscribe', function(data){
     var room = data.room;
-    socket.join(room);
+    if(rooms[room]){
+      socket.join(room);
+    }// end if the room exists
   });
 
   socket.on('unsubscribe', function(data){

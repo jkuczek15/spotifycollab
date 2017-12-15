@@ -28,7 +28,41 @@ export class DashboardService {
           reject(err);
         });
     });
-  }// end function createPlaylist
+  }// end function play
+
+  pause(){
+    return new Promise((resolve, reject) => {
+      this.http.put('https://api.spotify.com/v1/me/player/pause', null)
+        .subscribe(res => {
+          resolve(res);
+        }, (err) => {
+          reject(err);
+        });
+    });
+  }// end function pause
+
+  nextTrack(){
+    return new Promise((resolve, reject) => {
+      this.http.post('https://api.spotify.com/v1/me/player/next', null)
+        .subscribe(res => {
+          resolve(res);
+        }, (err) => {
+          reject(err);
+        });
+    });
+  }// end function nextTrack
+
+  currentlyPlaying(){
+    return new Promise((resolve, reject) => {
+      this.http.get('https://api.spotify.com/v1/me/player/currently-playing', null)
+        .map(res => res.json())
+        .subscribe(res => {
+          resolve(res);
+        }, (err) => {
+          reject(err);
+        });
+    });
+  }// end function currentlyPlaying
 
   createPlaylist(user_id, data){
     return new Promise((resolve, reject) => {
