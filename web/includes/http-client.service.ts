@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { AuthService } from '../app/auth/auth.service';
+import { RequestOptions } from '@angular/http';
 
 @Injectable()
 export class HttpClient {
@@ -49,5 +50,17 @@ export class HttpClient {
       headers: headers
     });
   }// end function post
+
+  delete(url, data, cors=false) {
+    let headers = new Headers();
+    this.createAuthorizationHeader(headers);
+    if(cors){
+      this.createCORSHeader(headers);
+    }// end if enabling CORS
+    return this.http.delete(url, new RequestOptions({
+      headers: headers,
+      body: data
+    }));
+  }// end function delete
 
 }// end class HttpClient

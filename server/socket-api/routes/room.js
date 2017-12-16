@@ -15,18 +15,23 @@ const io = require('socket.io')(server);
 io.on('connection', function (socket) {
   
   socket.on('subscribe', function(data){
+    // subscribe the user to the room and emit
+    // data related to that room
     var roomName = data.roomName;
     Room.findOne({ name: roomName }, function(error, room) {
       if(error) throw error;
       if(room != null){
         socket.join(room.name);
+        socket.emit('room-update', { room: room });
       }// end if room exists
     });
   });
 
   socket.on('unsubscribe', function(data){
-    var roomName = data.roomName;
-    socket.leave(roomName);
+    // unsubscribe a user from a room, note that this is different
+    // from leaving a room because it is only called when the host user
+    // chooses to end the room
+    socket.leave(data.roomName);
   });
 
   socket.on('leave-room', function(data) {
@@ -60,20 +65,6 @@ io.on('connection', function (socket) {
       // emit a null room update so all sockets know to
       // stop displaying the room
       io.sockets.in(room.name).emit('room-update', { room: null });
-      
-      // send a request to spotify to delete the playlist
-      // we need the host's access token
-      var options = {
-        url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+queue.id+'/followers',
-        headers: {
-            'Authorization': 'Bearer ' + host.access_token
-        }
-      };
-
-      // send the delete request
-      request.delete(options, function(error, response, body){
-        console.log('Successfully deleted playlist.');
-      });
     });
   });
 
@@ -93,7 +84,7 @@ io.on('connection', function (socket) {
         room.users.push(user);
         room.save(function(error, room){
           socket.join(room.name);
-          io.sockets.in(room.name).emit('room-update', {room: room});
+          io.sockets.in(room.name).emit('room-update', { room: room });
         });
       }// end if room is null
     });
@@ -110,7 +101,7 @@ io.on('connection', function (socket) {
     var room = {
       name: roomName,
       users: [user],
-      queue: { tracks: {'1': '1'} }
+      queue: { tracks: {'key': 'value'} }
     };
 
     // create the room and save it to MongoDB
@@ -126,30 +117,11 @@ io.on('connection', function (socket) {
         // and saved it to the database, join the room and emit 
         // a room update message to the host client
         // setup the request for adding a new playlist
-        var options = {
-          url:  'https://api.spotify.com/v1/users/'+user['id']+'/playlists',
-          headers: {
-            'Authorization': 'Bearer ' + user['access_token'],
-            'Content-Type' : 'application/json'
-          },
-          json: {
-            description: "Boom room playlist",
-            public: false,
-            name: "Boom Room - " + room.name
-          }
-        };
-
-        // make the request for adding a new playlist
-        // upon completion of the request, store the playlist information
-        // in the database and return a socket message to the host who 
-        // created the room
-        request.post(options, function(error, response, queue){
-          room.queue = queue;
-          room.save(function(error, room){
-            socket.join(room.name);
-            socket.emit('room-update', { room: room, created: true });
-          });
-        });  
+        room.queue = data.queue;
+        room.save(function(error, room) {
+          socket.join(room.name);
+          socket.emit('room-update', { room: room, created: true });
+        });
       }// end if error
     });
   });
@@ -177,11 +149,18 @@ io.on('connection', function (socket) {
         { $push: { "queue.tracks.items": track } },
         function(error, body) {
           // update was successful, emit a socket message with new track added
+          console.log(room);
           room.queue.tracks.items.push(track);
           io.sockets.in(room.name).emit('room-update', { room: room });
         }// end callback function
       );
     });
+  });
+
+  socket.on('room-broadcast', function(data) {
+    var room = data.room;
+    var roomName = data.roomName;
+    io.sockets.in(roomName).emit('room-update', { room: room });
   });
 
 });

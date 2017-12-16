@@ -5,15 +5,15 @@
             Dashboard
             <span [hidden]="!joined"> - {{ room.name }}</span>
             <span [hidden]="!joined"> - 
-                <button type="button" class="btn btn-danger" (click)="leaveRoom()">
-                    <span [hidden]="isHost">Leave</span>
-                    <span [hidden]="!isHost">End Room</span>    
+                <button type="button" class="btn btn-danger">
+                    <span [hidden]="isHost" (click)="leaveRoom()">Leave</span>
+                    <span [hidden]="!isHost" (click)="endRoom()">End Room</span>    
                 </button>
             </span>
         </h1>
     </div>
     <div class="col-xs-4">
-        <div class="music-player" [hidden]="!isHost">
+        <div class="music-player" [hidden]="!joined || !isHost">
             <span [hidden]="isPlaying">
                 <span class="glyphicon glyphicon-play" style="margin-left: 10px" (click)="play()"></span>
             </span>
@@ -78,6 +78,7 @@
                                         <th scope="col">Name</th>
                                         <th scope="col">Artist</th>
                                         <th scope="col">Album</th>
+                                        <th scope="col" [hidden]="!isHost">Options</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -86,6 +87,7 @@
                                         <td><span >{{ track.name }}</span></td>
                                         <td>{{ track.artists[0].name }}</td>
                                         <td>{{ track.album.name }}</td>
+                                        <td [hidden]="!isHost"><span class="glyphicon glyphicon-minus" (click)="removeTrack(track, i)"></span></td>
                                     </tr>
                                 </tbody>
                         </table>

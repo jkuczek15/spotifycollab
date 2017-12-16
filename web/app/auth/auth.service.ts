@@ -35,6 +35,14 @@ export class AuthService {
     return user['room'] || null;
   }// end function getRoom
 
+  removeRoom(){
+    var user = this.getUser();
+    if(user){
+      delete user['room'];
+      this.saveUser(user);
+    }// end if user exists
+  }// end function removeRoom
+
   getUserID(){
     // returns the spotify id of the user
     var user = this.getUser();
@@ -51,9 +59,16 @@ export class AuthService {
     return this.getUser() != null;
   }// end function loggedIn
 
-  isHost(room){
-    var host = this.getHost(room);
-    return this.loggedIn() && host.id == this.getUser().id;
+  setHost(host){
+    var user = this.getUser();
+    user['host'] = host;
+    this.saveUser(user);
+    return host;
+  }// end function setHost
+
+  isHost(){
+    var user = this.getUser();
+    return user['host'] == true;
   }// end function isHost
 
   getHost(room){
