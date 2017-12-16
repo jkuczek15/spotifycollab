@@ -47,7 +47,7 @@ function normalizePort(val) {
   }
 
   return false;
-}
+}// end function normalizePort
 
 /**
  * Event listener for HTTP server "error" event.
@@ -74,8 +74,8 @@ function onError(error) {
       break;
     default:
       throw error;
-  }
-}
+  }// end switch on error.code
+}// end function onError
 
 /**
  * Event listener for HTTP server "listening" event.
@@ -87,4 +87,4 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-}
+}// end function onListening

@@ -45,6 +45,10 @@ export class DashboardComponent implements OnInit {
     self.library = [];
     self.currentlyPlaying = {};
     this.isPlaying = false;
+    this.roomName = "";
+
+    // require that the user be logged in to access the dashboard
+    if(!this.authentication.requireLogin()) return false;
 
     // create a handler for error messages, updating them as the server passes them back
     // handler to be called upon return of an error message from Socket.io
@@ -72,13 +76,15 @@ export class DashboardComponent implements OnInit {
       // get the new room information
       // first check if we have a null room update
       // this means that user left the room or host user ended the room
-      if(data.room == null){
+      if(data.room == null) {
+        // unsubscribe the user from the room and reset the screen
         self.socket.emit('unsubscribe', { roomName: self.room.name });
         self.room = new RoomVM.Room;
         self.joined = false;
         self.isHost = false;
         self.error = null;
       }else{
+        // update the room with the new information
         self.room = data.room;
         self.joined = true;
         if(data.created){
@@ -88,7 +94,6 @@ export class DashboardComponent implements OnInit {
      
       // save the room data to the session in case they refresh the page
       self.authentication.saveRoom(data.room);
-
       console.log("Room update:", data);
     });
 
@@ -124,11 +129,23 @@ export class DashboardComponent implements OnInit {
   }// end function getPlaylists()
 
   joinRoom(){
-    this.socket.emit('join-room', { user: this.authentication.getUser(), roomName: this.roomName });
+    if(this.roomName.search(/^$|\s+/) == 0){
+      // the room name is empty
+      this.error = "Please enter a room name.";
+    }else{
+      // the room name is not empty
+      this.socket.emit('join-room', { user: this.authentication.getUser(), roomName: this.roomName });
+    }// end if the room name is empty
   }// end function joinRoom
 
   hostRoom(){
-    this.socket.emit('create-room', { user: this.authentication.getUser(), roomName: this.roomName });
+    if(this.roomName.search(/^$|\s+/) == 0){
+      // the room name is empty
+      this.error = "Please enter a room name.";
+    }else{
+      // the room name is not empty
+      this.socket.emit('create-room', { user: this.authentication.getUser(), roomName: this.roomName });
+    }// end if the room name is empty
   }// end function hostRoom
 
   leaveRoom(){
@@ -142,7 +159,7 @@ export class DashboardComponent implements OnInit {
   }// end function leaveRoom
 
   updatePlayback(data) {
-    if(data){
+    if(this.joined && this.isHost && data){
       this.isPlaying = data.is_playing;
       this.currentlyPlaying = data.item;
       
@@ -151,8 +168,8 @@ export class DashboardComponent implements OnInit {
       }// end if playback data has a context
       
       console.log("Playback Update:", data);
-    }// end if we have valid playback data
-   
+    }// end if user has joined a room, is the host, and we have playback data
+    
   }// end function updatePlayback
 
   play(event){

@@ -7,7 +7,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 # Installing Software
 
 1. Install Node.js and npm from [here](https://nodejs.org/en/download/).
-2. Run npm install inside the project directory to install missing dependencies.
+2. Run `npm install` inside the project directory to install missing dependencies.
 3. Run the following three commands:
 
     `npm install -g nodemon`
@@ -16,15 +16,16 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
     `npm install -g angular-cli`
 
-4. `(Optional)` install [mongoDB](https://www.mongodb.com/download-center#community) for a database (we don't have plans to store data yet, but we probably will soon).
+4. Install [MongoDB](https://www.mongodb.com/download-center#community) for a database server. It is recommended that you add the MongoDB `bin` folder to your PATH environment variable. 
 5. That's it, if you've made it this far, you're ready to run the project.
 
 # Run the project
 1. Navigate to the folder titled 'rest-api' and run the command `swagger project start`, this starts the rest-api which we will interact with both from the client and the server.
-2. Navigate to the project directory and run `nodemon`, this starts the web server along with socket.io on two separate ports. This also watches the server for changes.
-3. `(Optional)` Navigate to the project directory and run `ng build --watch`. This watches the client side for changes.
-4. `(Optional)` Run a mongodb database server and connect to it with either the rest-api or the web server/socket.io. Usually the command is something like `./{path_to_mongodb}/Server/{version}/bin/mongod`
-5. `(Optinal)` Navigate to 'rest-api' folder and run `swagger project edit`, this allows us to edit and test our rest-api using swagger's slick interface.
+2. Run a mongodb database server and connect to it with either the rest-api or the web server/socket.io. On Windows, the executable file is something similar to the following path:  `./Program Files/MongoDB/Server/{version}/bin/mongod`
+3. Navigate to the project directory and run `nodemon`, this starts the web server along with socket.io on two separate ports. This also watches the server for changes.
+4. `(Optional)` Navigate to the project directory and run `ng build --watch`. This watches the client side for changes.
+
+5. `(Optional)` Navigate to 'rest-api' folder and run `swagger project edit`, this allows us to edit and test our rest-api using swagger's slick interface.
 
 ##  Environments
 To setup environment variables that are specific to the project, navigate to the folder `environments` under the main project directory. Some variables you can change here include: host, ports, and spotify web api configuration. 

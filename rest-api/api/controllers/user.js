@@ -11,9 +11,7 @@
   It is a good idea to list the modules that your application depends on in the package.json in the project root
  */
 var util = require('util');
-var mongoose = require('mongoose');
 var request = require('request'); 
-var secret = require('../secret');
 var querystring = require('querystring');
 var environment = require('../../../environments/environment');
 
@@ -47,11 +45,11 @@ function get(req, res) {
         url: 'https://accounts.spotify.com/api/token',
         form: {
             code: code,
-            redirect_uri: secret.REDIRECT_URI,
+            redirect_uri: redirect_uri,
             grant_type: 'authorization_code'
         },
         headers: {
-            'Authorization': 'Basic ' + (new Buffer(secret.CLIENT_ID + ':' + secret.CLIENT_SECRET).toString('base64'))
+            'Authorization': 'Basic ' + (new Buffer(environment.client_id + ':' + environment.client_secret).toString('base64'))
         },
         json: true
     };

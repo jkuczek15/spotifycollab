@@ -5,18 +5,11 @@ var app = express();
 var server = require('http').createServer(app);
 var Room = require('../models/Room.js');
 var methodOverride = require('method-override');
-var cors = require('cors');
 var request = require('request');
 var environment = require('../../../environments/environment');
-var Room = require('../models/Room');
 
-// initialize socket.io with custom settings
-const io = require('socket.io')(server, {
-  serveClient: false,
-  pingInterval: 10000,
-  pingTimeout: 80000,
-  cookie: false
-});
+// initialize socket.io
+const io = require('socket.io')(server);
 
 // socket io
 io.on('connection', function (socket) {
@@ -121,9 +114,9 @@ io.on('connection', function (socket) {
     };
 
     // create the room and save it to MongoDB
-    var dbRoom = new Room(room);
+    var room = new Room(room);
     var error = null;
-    dbRoom.save(function(error, room) {
+    room.save(function(error, room) {
       if(error){
         // there was an error when inserting data into MongoDB
         // currently this can only be a duplicate key error
@@ -190,25 +183,8 @@ io.on('connection', function (socket) {
       );
     });
   });
+
 });
-
-
-/*
-We only need this if we want to make direct API requests from the client
-to the Socket.io server
-
-// Initialize a CORS preflight request for this particular route
-// This includes both the options and delete request
-app.options('/rooms', cors());
-app.delete('/rooms', cors(), function(req, res){
-  res.json({ text: 'Success' });
-});
-
-// Enable CORS for this request
-app.get('/rooms', cors(), function (req, res, next) {
-  res.json(rooms);
-});
-*/
 
 server.listen(4000);
 

@@ -77,8 +77,10 @@ export class AuthService {
       this.storedURL = this.router.url;
       this.routeControl.routeChange();
       this.router.navigateByUrl('/');
+      return false;
     }// end if the user is not logged in
 
+    return true;
   }// end function to simpfy required login logic
 
   redirectIfLoggedIn(url) {

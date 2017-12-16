@@ -41,9 +41,9 @@ export class AppComponent implements OnInit {
     
     // List of URL's to determine if we are showing/hiding certain elements
     this.hiddenUrls = {
-      no_item_spacing: ['/', '/login', '/register'],
+      no_item_spacing:  ['/', '/login', '/register'],
       no_sidebar_right: ['/', '/login', '/register', '/dashboard'],
-      no_sidebar_left: []
+      no_sidebar_left:  ['/', '/login', '/register']
     };
 
     // Function to be called each time the route changes
