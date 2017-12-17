@@ -90,6 +90,27 @@ export class DashboardComponent implements OnInit {
       console.log("Room update:", data);
     });
 
+    // create a handler for when the host's playback changes
+    this.socket.on('playback-update', function (data) {
+      if(self.joined) {
+        // the user has joined, and there is current
+        // playback data available
+        self.isPlaying = data.is_playing;
+        
+        if(data.item == null) {
+          self.currentlyPlaying = { id: -1 };
+        }else{
+          self.currentlyPlaying = data.item;
+        }// end if there is no currently playing track
+        
+        if(data.context){
+          self.contextUri = data.context.uri;
+        }// end if playback data has a context
+  
+        console.log("Playback Update:", data);
+      }// end if user has joined a room, is the host, and we have playback data
+    });
+
     // set up an interval function to run and request playlist data from Spotify
     // this is the only way to ensure that we have the same playback data as Spotify
     Observable.interval(playbackRefreshInterval).subscribe(x => {
@@ -173,20 +194,23 @@ export class DashboardComponent implements OnInit {
   }// end function endRoom
 
   updatePlayback(data) {
-    if(this.joined && this.isHost && data){
-      this.isPlaying = data.is_playing;
-      this.currentlyPlaying = data.item;
-      
-      if(data.context){
-        this.contextUri = data.context.uri;
-      }// end if playback data has a context
-      
-      console.log("Playback Update:", data);
+    // updating and checking playback data should always happen
+    // from the host of the room, the host will then emit socket 
+    // messages telling other users that the playback data has changed
+    if(this.joined && this.isHost && data) {
+      // the user has joined, and there is current
+      // playback data available
+      if(this.currentlyPlaying != null && this.contextUri === this.room.queue.uri && this.currentlyPlaying.id !== data.item.id) {
+        // the currently playing song has changed
+        // remove the track from the queue
+        this.removeTrack(this.currentlyPlaying, 0);
+      }// end if the currently playing song has changed
+
+      this.socket.emit('playback-broadcast', { roomName: this.room.name, playback: data });
     }// end if user has joined a room, is the host, and we have playback data
-    
   }// end function updatePlayback
 
-  play(event){
+  play(){
     // start playing the user's playlist queue from the first song
     var self = this;
     var data;
@@ -210,7 +234,7 @@ export class DashboardComponent implements OnInit {
     });
   }// end function play
 
-  pause(event){
+  pause(){
     this.dashboardService.pause().then((data: any) => {}, (err) => {
       if(err.status !== 401){
         console.log(err);
@@ -218,7 +242,7 @@ export class DashboardComponent implements OnInit {
     });
   }// end function pause
   
-  nextTrack(event){
+  nextTrack(){
     this.dashboardService.nextTrack().then((data: any) => {
       // successful response, music should now be playing via
       // the spotify application

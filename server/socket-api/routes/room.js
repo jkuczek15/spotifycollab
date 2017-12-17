@@ -149,7 +149,6 @@ io.on('connection', function (socket) {
         { $push: { "queue.tracks.items": track } },
         function(error, body) {
           // update was successful, emit a socket message with new track added
-          console.log(room);
           room.queue.tracks.items.push(track);
           io.sockets.in(room.name).emit('room-update', { room: room });
         }// end callback function
@@ -158,9 +157,20 @@ io.on('connection', function (socket) {
   });
 
   socket.on('room-broadcast', function(data) {
-    var room = data.room;
+    var newRoom = data.room;
     var roomName = data.roomName;
-    io.sockets.in(roomName).emit('room-update', { room: room });
+    // save the new room information to the database and emit
+    // a message to all sockets in the room telling them that the
+    // room data has been updated
+    Room.replaceOne({ _id: newRoom._id }, newRoom, function(error, body){
+      io.sockets.in(roomName).emit('room-update', { room: newRoom });
+    });
+  });
+
+  socket.on('playback-broadcast', function(data) {
+    var playback = data.playback;
+    var roomName = data.roomName;
+    io.sockets.in(roomName).emit('playback-update', playback);
   });
 
 });
