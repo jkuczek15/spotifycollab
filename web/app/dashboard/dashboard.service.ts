@@ -87,9 +87,9 @@ export class DashboardService {
     });
   }// end function createPlaylist
 
-  removePlaylist(user_id, queue_id) {
+  removePlaylist(user_id, playlist_id) {
     return new Promise((resolve, reject) => {
-      this.http.delete('https://api.spotify.com/v1/users/'+user_id+'/playlists/'+queue_id+'/followers', null)
+      this.http.delete('https://api.spotify.com/v1/users/'+user_id+'/playlists/'+playlist_id+'/followers', null)
         .subscribe(res => {
           resolve(res);
         }, (err) => {
@@ -97,6 +97,18 @@ export class DashboardService {
         });
     });
   }// end function createPlaylist
+
+  reorderPlaylist(user_id, playlist_id, data) {
+    return new Promise((resolve, reject) => {
+      this.http.put('https://api.spotify.com/v1/users/'+user_id+'/playlists/'+playlist_id+'/tracks', data)
+        .map(res => res.json())
+        .subscribe(res => {
+          resolve(res);
+        }, (err) => {
+          reject(err);
+        });
+    });
+  }// end function reorderPlaylist
 
   currentlyPlaying(){
     return new Promise((resolve, reject) => {
