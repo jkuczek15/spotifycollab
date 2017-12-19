@@ -82,15 +82,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let track of room.queue.tracks.items; let i = index" [ngClass]="{green: track.id == currentlyPlaying.id}">
+                                    <tr *ngFor="let item of queue; let i = index" [ngClass]="{green: item.track.id == currentlyPlaying.id && i == 0}">
                                         <td>{{ i+1 }}</td>
-                                        <td><span >{{ track.name }}</span></td>
-                                        <td>{{ track.artists[0].name }}</td>
-                                        <td>{{ track.album.name }}</td>
-                                        <td [hidden]="!isHost">
+                                        <td><span >{{ item.track.name }}</span></td>
+                                        <td>{{ item.track.artists[0].name }}</td>
+                                        <td>{{ item.track.album.name }}</td>
+                                        <td [hidden]="!isHost || i == 0">
                                             <span class="glyphicon glyphicon-play" (click)="play(i)"></span> &nbsp;
-                                            <span class="glyphicon glyphicon-minus" (click)="removeTrack(track, i)"></span>
+                                            <span class="glyphicon glyphicon-minus" (click)="removeTrack(item.track, i)"></span>
                                         </td>
+                                        <td [hidden]="!isHost && i == 0">&nbsp;</td>
                                     </tr>
                                 </tbody>
                         </table>

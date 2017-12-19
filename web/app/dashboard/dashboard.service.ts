@@ -19,6 +19,18 @@ export class DashboardService {
     });
   }// end function getChatByRoom
 
+  getPlaylist(playlistUri){
+    return new Promise((resolve, reject) => {
+      this.http.get(playlistUri)
+        .map(res => res.json())
+        .subscribe(res => {
+          resolve(res);
+        }, (err) => {
+          reject(err);
+        });
+    });
+  }// end function getPlaylist
+
   play(data){
     return new Promise((resolve, reject) => {
       this.http.put('https://api.spotify.com/v1/me/player/play', data)

@@ -14,7 +14,7 @@ const io = require('socket.io')(server);
 // socket io
 io.on('connection', function (socket) {
   
-  socket.on('subscribe', function(data){
+  socket.on('subscribe', function(data) {
     // subscribe the user to the room and emit
     // data related to that room
     var roomName = data.roomName;
@@ -22,12 +22,12 @@ io.on('connection', function (socket) {
       if(error) throw error;
       if(room != null){
         socket.join(room.name);
-        socket.emit('room-update', { room: room });
+        socket.emit('room-update', { room: room, joined: true });
       }// end if room exists
     });
   });
 
-  socket.on('unsubscribe', function(data){
+  socket.on('unsubscribe', function(data) {
     // unsubscribe a user from a room, note that this is different
     // from leaving a room because it is only called when the host user
     // chooses to end the room
@@ -80,11 +80,10 @@ io.on('connection', function (socket) {
         socket.emit('error-message', "Room does not exist yet. Click 'host' to start one now!");
       }else{
         // subscribe the current user's socket to the room
-        //console.log(room);
         room.users.push(user);
         room.save(function(error, room){
           socket.join(room.name);
-          io.sockets.in(room.name).emit('room-update', { room: room });
+          io.sockets.in(room.name).emit('room-update', { room: room, joined: true });
         });
       }// end if room is null
     });
@@ -92,16 +91,16 @@ io.on('connection', function (socket) {
 
   socket.on('create-room', function(data) {
     // create a new room based on parameters sent to us
-    var roomName = data.roomName;
-    var user = data.user;
-
     // set the host variable to true since this is the user who created the room
     // initialize the room with an empty play queue
+    var user = data.user;
     user['host'] = true;
     var room = {
-      name: roomName,
+      name: data.roomName,
       users: [user],
-      queue: { tracks: {'key': 'value'} }
+      playlistUri: data.playlistUri,
+      playlistId: data.playlistId,
+      contextUri: data.contextUri
     };
 
     // create the room and save it to MongoDB
@@ -117,11 +116,8 @@ io.on('connection', function (socket) {
         // and saved it to the database, join the room and emit 
         // a room update message to the host client
         // setup the request for adding a new playlist
-        room.queue = data.queue;
-        room.save(function(error, room) {
-          socket.join(room.name);
-          socket.emit('room-update', { room: room, created: true });
-        });
+        socket.join(room.name);
+        socket.emit('room-update', { room: room, joined: true });
       }// end if error
     });
   });
@@ -130,29 +126,20 @@ io.on('connection', function (socket) {
     var track = data.track;
     var room = data.room;
 
-    // host will always be the first person in the room
-    var host = room.users[0];
-
     // setup the request for adding a new track
+    // host will always be the first person in the room
     var options = {
-      url:  'https://api.spotify.com/v1/users/'+host.id+'/playlists/'+room.queue.id+'/tracks?uris=' + encodeURIComponent('spotify:track:'+track.id),
+      url:  room.playlistUri + '/tracks?uris=' + encodeURIComponent('spotify:track:'+track.id),
       headers: {
-        'Authorization': 'Bearer ' + host.access_token,
+        'Authorization': 'Bearer ' + room.users[0].access_token,
         'Content-Type' : 'application/json'
       }
     };
 
     // make the request for adding a new track
     request.post(options, function(error, response, body) {
-      Room.update(
-        { name: room.name }, 
-        { $push: { "queue.tracks.items": track } },
-        function(error, body) {
-          // update was successful, emit a socket message with new track added
-          room.queue.tracks.items.push(track);
-          io.sockets.in(room.name).emit('room-update', { room: room });
-        }// end callback function
-      );
+      // tell all the users in the room that the playlist has been updated
+      io.sockets.in(room.name).emit('playlist-update');
     });
   });
 
@@ -165,6 +152,11 @@ io.on('connection', function (socket) {
     Room.replaceOne({ _id: newRoom._id }, newRoom, function(error, body){
       io.sockets.in(roomName).emit('room-update', { room: newRoom });
     });
+  });
+
+  socket.on('playlist-broadcast', function(data) {
+    var roomName = data.roomName;
+    io.sockets.in(roomName).emit('playlist-update');
   });
 
   socket.on('playback-broadcast', function(data) {

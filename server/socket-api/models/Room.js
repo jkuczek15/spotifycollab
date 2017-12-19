@@ -10,8 +10,14 @@ var RoomSchema = new mongoose.Schema({
     users: {
         type: Array
     },
-    queue: {
-        type: Object
+    playlistUri: {
+        type: String
+    },
+    playlistId:{
+        type: String
+    },
+    contextUri: {
+        type: String
     },
     created: { type: Date, default: Date.now }
   }, { strict: false, usePushEach: true });

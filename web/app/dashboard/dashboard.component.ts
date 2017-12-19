@@ -5,21 +5,14 @@ import { HttpClient } from '../../includes/http-client.service';
 import { DerpPipe } from '../../includes/derp.pipe';
 import { RouteHelper } from '../../includes/utils/route-helper.module';
 import { Observable } from 'rxjs/Rx';
-import * as LibraryVM from '../../includes/viewModels/Library.js';
-import * as RoomVM from '../../includes/viewModels/Room.js';
-import * as io from "socket.io-client";
 import { last } from '@angular/router/src/utils/collection';
-import * as environment from '../../../environments/environment';
 import { validateConfig } from '@angular/router/src/config';
+import * as RoomVM from '../../includes/viewModels/Room';
+import * as io from "socket.io-client";
+import * as environment from '../../../environments/environment';
+// required to use jQuery
 declare var $: any;
 
-/*
-  TODO:
-  Currently, we are storing the entire queue in the database when we only need to store the url.
-  When playlist updates are made, the host should send a socket message telling all users in the current
-  room to refresh the playlist, we also may need to make the playlist public in order for this to work.
-  This is a lot more efficient, will make the code more readable, and will take some load off of the socket.io server
-*/
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -32,17 +25,24 @@ export class DashboardComponent implements OnInit {
               private routeControl: RouteHelper,
               private http: HttpClient) { }
 
-  // the user data from spotify (includes access token)
+  // main objects displayed on the dashboard
   public room: any;
-  private isHost: boolean;
+  private user: any;
   private library: any;
+  private queue: any;
+  private currentlyPlaying: any;
+  
+  // booleans to help determine which content to show
+  private isHost: boolean;
   private joined: boolean;
+  private isPlaying: boolean;
+  
+  // strings related to forms and content
   private roomName: string;
   private error: string;
-  private isPlaying: boolean;
-  private currentlyPlaying: any;
   private contextUri: string;
-  private user: any;
+  
+  // make a socket.io connection to the server
   private socket = io('http://'+ environment.host + ':' + environment.socket_port);
   
   ngOnInit() {
@@ -50,14 +50,15 @@ export class DashboardComponent implements OnInit {
     var playbackRefreshInterval = 1000;
     var self = this;
     self.room = new RoomVM.Room;
+    self.queue = [];
     self.library = [];
     self.currentlyPlaying = {};
-    this.isPlaying = false;
-    this.roomName = "";
-    this.user = this.authentication.getUser();
+    self.isPlaying = false;
+    self.roomName = "";
+    self.user = this.authentication.getUser();
 
     // require that the user be logged in to access the dashboard
-    if(!this.authentication.requireLogin()) return false;
+    if(!self.authentication.requireLogin()) return false;
 
     // check if we have room information stored in the session,
     // if we do, we should use this before displaying the 'join' form
@@ -71,12 +72,12 @@ export class DashboardComponent implements OnInit {
 
     // create a handler for error messages, updating them as the server passes them back
     // handler to be called upon return of an error message from Socket.io
-    this.socket.on('error-message', function (data) {
+    self.socket.on('error-message', function (data) {
       self.error = data;
     });
 
     // create a handler for when the room is updated or changed
-    this.socket.on('room-update', function (data) {
+    self.socket.on('room-update', function (data) {
       // get the new room information
       // first check if we have a null room update
       // this means that user left the room or host user ended the room
@@ -91,32 +92,52 @@ export class DashboardComponent implements OnInit {
       }else{
         // update the room with the new information
         self.room = data.room;
-        self.joined = true;
+        if(data.joined) {
+          // if they recently joined, we need to get the tracks from the playlist
+          self.dashboardService.getPlaylist(self.room.playlistUri+'/tracks').then((data: any) => {
+            // successful response, set the queue data
+            self.queue = data.items;
+            self.joined = true;
+          }, (err) => {
+            if(err.status !== 401){
+              console.log(err);
+            }// end if not unauthorized error
+          });
+        }// end if the user just joined or created the playlist
         self.authentication.saveRoom(data.room.name);
       }// end if the room is null
      
-      console.log("Room update:", data);
+      // console.log("Room update:", data);
+    });
+
+    // create a handler for when the playlist is updated or changed
+    self.socket.on('playlist-update', function (data) {
+      self.dashboardService.getPlaylist(self.room.playlistUri+'/tracks').then((data: any) => {
+        // successful response, set the queue data
+        self.queue = data.items;
+      }, (err) => {
+        if(err.status !== 401){
+          console.log(err);
+        }// end if not unauthorized error
+      });
     });
 
     // create a handler for when the host's playback changes
-    this.socket.on('playback-update', function (data) {
-      if(self.joined) {
+    self.socket.on('playback-update', function (data) {
+      if(self.joined && data.context != null && self.room != null && data.context.uri === self.room.contextUri){
         // the user has joined, and there is current
-        // playback data available
+        // playback data available related to the assigned room
+        self.contextUri = data.context.uri;
         self.isPlaying = data.is_playing;
-        
+      
         if(data.item == null) {
           self.currentlyPlaying = { id: -1 };
         }else{
           self.currentlyPlaying = data.item;
-        }// end if there is no currently playing track
-        
-        if(data.context){
-          self.contextUri = data.context.uri;
-        }// end if playback data has a context
-  
-        //console.log("Playback Update:", data);
-      }// end if user has joined a room, is the host, and we have playback data
+        }// end if we have a currently playing item
+
+        // console.log("Playback Update:", data);
+      }// end if playback data has a context
     });
 
     // set up an interval function to run and request playlist data from Spotify
@@ -135,8 +156,8 @@ export class DashboardComponent implements OnInit {
 
     // set the isHost variable so that we can display different items
     // based on the host condition
-    this.isHost = this.authentication.isHost();
-    this.getLibrary();
+    self.isHost = self.authentication.isHost();
+    self.getLibrary();
   }// end ngOnInit function
 
   getLibrary() {
@@ -148,7 +169,7 @@ export class DashboardComponent implements OnInit {
         console.log(err);
       }// end if not unauthorized error
     });
-  }// end function getPlaylists()
+  }// end function getLibrary
 
   joinRoom(){
     if(this.roomName.search(/^$|\s+/) == 0){
@@ -175,7 +196,7 @@ export class DashboardComponent implements OnInit {
       this.dashboardService.createPlaylist(this.user.id, data).then((data: any) => {
         // successfully created a new Spotify playlist
         // show the user the dashboard with their new playlist
-        this.socket.emit('create-room', { user: this.user, roomName: this.roomName, queue: data });
+        this.socket.emit('create-room', { user: this.user, roomName: this.roomName, playlistUri: data.href, playlistId: data.id, contextUri: data.uri });
         this.isHost = this.authentication.setHost(true);
       }, (err) => {
         if(err.status !== 401){
@@ -190,7 +211,7 @@ export class DashboardComponent implements OnInit {
   }// end function leaveRoom
 
   endRoom(){
-    this.dashboardService.removePlaylist(this.user.id, this.room.queue.id).then((data: any) => {
+    this.dashboardService.removePlaylist(this.user.id, this.room.playlistId).then((data: any) => {
       // successfully removed/unfollowed the Spotify playlist
       // send a socket message to tell all the users in the room that it is closed
       this.socket.emit('end-room', { user: this.user, room: this.room });
@@ -205,47 +226,48 @@ export class DashboardComponent implements OnInit {
     // updating and checking playback data should always happen
     // from the host of the room, the host will then emit socket 
     // messages telling other users that the playback data has changed
-    if(this.joined && this.isHost && data) {
-      // the user has joined, and there is current
-      // playback data available
-      if(this.currentlyPlaying != null && this.contextUri === this.room.queue.uri && this.currentlyPlaying.id !== data.item.id) {
-        // the currently playing song has changed
-        // remove the track from the queue
-        var self = this;
-        this.removeTrack(this.currentlyPlaying, 0, function() {
-          var queue = self.room.queue.tracks.items;
-          if(queue.length != 0){
-            // the length of the queue is nonzero after removing a track
-            var next_track = self.room.queue.tracks.items[0];
-            var position = self.findTrackPosition(data.item.id);
-            if(next_track.id !== data.item.id){
-              // the next track to be played differs from the currently playing track
-              // we need to reorder the playlist and put the currently playing track at the top of the queue
-              var reorder = {
-                range_start: position,
-                insert_before: 0
-              };
-              self.dashboardService.reorderPlaylist(self.user.id, self.room.queue.id, reorder).then((data: any) => {
-                // successfully reordered the playlist, now update it on the client side and emit a message
-                // to all the users in the room
-                var tmp = self.room.queue.tracks.items[position];
-                self.room.queue.tracks.items.splice(position, 1);
-                self.room.queue.tracks.items.unshift(tmp);
-                self.socket.emit('room-broadcast', { room: self.room });
-              }, (err) => {
-                if(err.status !== 401){
-                  console.log(err);
-                }// end if not unauthorized error
-              });
-            }// end if the next track to be played is not the same as currently playing track
-          }// end if the length of the queue is non-zero
-        });
-
-        
-      }// end if the currently playing song has changed
-
+    if(!this.joined || !this.isHost || this.queue === undefined || !data) return;
+    
+    if(this.contextUri != this.room.contextUri) {
+      // user isn't playing the playlist assigned for the room
       this.socket.emit('playback-broadcast', { roomName: this.room.name, playback: data });
-    }// end if user has joined a room, is the host, and we have playback data
+      return;
+    }// end if the user isn't playing the playlist assigned to the room
+
+    // the user has joined, and there is current
+    // playback data available related to the room's playlist
+    if(this.currentlyPlaying != null && this.currentlyPlaying.id !== data.item.id) {
+      // the currently playing song has changed
+      // remove the track from the queue
+      var self = this;
+      this.removeTrack(this.currentlyPlaying, 0, function() {
+        var queue = self.queue;
+        if(queue.length != 0) {
+          // the length of the queue is nonzero after removing a track
+          var next_track = self.queue[0].track;
+          var position = self.findTrackPosition(data.item.id);
+          
+          if(next_track.id !== data.item.id) {
+            // the next track to be played differs from the currently playing track
+            // we need to reorder the playlist and put the currently playing track at the top of the queue
+            var reorder = {
+              range_start: position-1,
+              insert_before: 0
+            };
+            self.dashboardService.reorderPlaylist(self.user.id, self.room.playlistId, reorder).then((data: any) => {
+              // successfully reordered the playlist, now update it on the client side and emit a message
+              // to all the users in the room
+              self.socket.emit('playlist-broadcast', { roomName: self.room.name });
+            }, (err) => {
+              if(err.status !== 401){
+                console.log(err);
+              }// end if not unauthorized error
+            });
+          }// end if the next track to be played is not the same as currently playing track
+        }// end if the length of the queue is non-zero
+      });
+    }// end if the currently playing song has changed
+    this.socket.emit('playback-broadcast', { roomName: this.room.name, playback: data });
   }// end function updatePlayback
 
   play(offset=0){
@@ -253,12 +275,12 @@ export class DashboardComponent implements OnInit {
     var self = this;
     var data;
 
-    if(this.contextUri !== this.room.queue.uri || offset != 0){
+    if(this.contextUri !== this.room.contextUri || offset != 0) {
       // this means the user hasn't started playing the playlist yet,
       // or they selected a different playlist/album from the spotify app
       // in either case, we want to tell spotify to play the playlist from the beginning
       data = {
-        context_uri: this.room.queue.uri,
+        context_uri: this.room.contextUri,
         offset: { "position" : offset }
       };
     }else{
@@ -315,14 +337,13 @@ export class DashboardComponent implements OnInit {
         positions: [position]
       }]
     };
-    this.dashboardService.removeTrack(this.user.id, this.room.queue.id, data).then((data: any) => {
+    this.dashboardService.removeTrack(this.user.id, this.room.playlistId, data).then((data: any) => {
       // successfully remove the track from the Spotify playlist
-      // broadcast this new queue to the rest of the people in the room
-      this.room.queue.tracks.items.splice(position, 1);
+      // run a callback if we have it, otherwise broadcast a playlist update to the rest of the room
       if(callback){
         callback();
       }else{
-        this.socket.emit('room-broadcast', { roomName: this.room.name, room: this.room });
+        this.socket.emit('playlist-broadcast', { roomName: this.room.name });
       }// end if we have a callback function to run
     }, (err) => {
       if(err.status !== 401){
@@ -340,8 +361,8 @@ export class DashboardComponent implements OnInit {
   }// end function addTrack
 
   findTrackPosition(id){
-    return this.room.queue.tracks.items.findIndex(function(track){
-      return track.id === id
+    return this.queue.findIndex(function(item){
+      return item.track.id === id
     });
   }// end function findTrackById
 
