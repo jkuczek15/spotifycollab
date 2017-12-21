@@ -33,6 +33,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   private searchMusic: any;
   private searchFormatter: any;
   private searchTrack: any;
+  private joined: boolean;
 
   // make a socket.io connection to the server
   private socket = io('http://'+ environment.host + ':' + environment.socket_port);
@@ -44,6 +45,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     let self = this;
+
+    // Initialize the joined variable for showing and hiding certain functions
+    this.joined = this.authentication.joined();
 
     // Initialize the autocomplete search box with the search music service
     this.searchMusic = (text$: Observable<string>) => text$
@@ -86,6 +90,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     }// end if current page is the index
   }// end ngAfterViewInit function
 
+  addTrack(event){
+    var track = event.item;
+    this.socket.emit('add-track', { track: track, room: this.authentication.getRoom() });
+  }// end function addTrack
+
   postScroll(id, reachedTarget) {
     // called each time user clicks link and scrolls to section
     if(reachedTarget) {
@@ -98,11 +107,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     $('#' + id).addClass("active");
     this.activeNavID = id;
   }// end function addActive
-
-  addTrack(event){
-    var track = event.item;
-    this.socket.emit('add-track', { track: track, room: this.authentication.getRoom() });
-  }// end function addTrack
 
   removeActive(id) {
     $('#' + id).removeClass("active");

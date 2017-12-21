@@ -32,7 +32,7 @@ export class AuthService {
 
   getRoom(){
     var user = this.getUser();
-    return user['room'] || null;
+    return user == null ? null : user['room'];
   }// end function getRoom
 
   removeRoom(){
@@ -46,18 +46,23 @@ export class AuthService {
   getUserID(){
     // returns the spotify id of the user
     var user = this.getUser();
-    return user['id'] || null
+    return user == null ? null : user['id'];
   }// end function getUserID
 
   getToken(){
     var user = this.getUser();
-    return user['access_token'] || null;
+    return user == null ? null : user['access_token'];
   }// end function getToken
 
   loggedIn() {
     // determine if the current user is logged in
     return this.getUser() != null;
   }// end function loggedIn
+
+  joined(){
+    var room = this.getRoom();
+    return room == null ? false : true;
+  }// end function joined
 
   setHost(host){
     var user = this.getUser();

@@ -29,17 +29,18 @@
               <a routerLink="/dashboard">Dashboard</a>
             </li>
             <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
-            <li>
-              <input id="typeahead-template" type="text" class="form-control" 
-                    [(ngModel)]="track" [ngbTypeahead]="searchMusic" placeholder="Search Music..."  [resultTemplate]="rt" 
-                    [inputFormatter]="searchFormatter" (selectItem)="addTrack($event)" />
-            </li>
+            <span [hidden]="!authentication.joined()">
+              <li>
+                <input id="typeahead-template" type="text" class="form-control" 
+                  [(ngModel)]="track" [ngbTypeahead]="searchMusic" placeholder="Search Music..."  [resultTemplate]="rt" 
+                  [inputFormatter]="searchFormatter" (selectItem)="addTrack($event)" />
+              </li>
+            </span>
           </ul>
           <ul *ngIf="!loggedIn" class="nav navbar-nav navbar-right">
             <li routerLinkActive="active"><a [href]="spotifyLoginUrl"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
           </ul>
           <ul *ngIf="loggedIn" class="nav navbar-nav navbar-right">
-            
             <li routerLinkActive="active"><a href="#" (click)="logout($event)"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
          </ul>
       </div>

@@ -226,7 +226,7 @@ export class DashboardComponent implements OnInit {
     // updating and checking playback data should always happen
     // from the host of the room, the host will then emit socket 
     // messages telling other users that the playback data has changed
-    if(!this.joined || !this.isHost || this.queue === undefined || !data) return;
+    if(!this.joined || !this.isHost || this.queue === undefined || !data || !this.authentication.loggedIn()) return;
     
     if(this.contextUri != this.room.contextUri) {
       // user isn't playing the playlist assigned for the room
