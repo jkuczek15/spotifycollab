@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "allowJs": true, 
-    "baseUrl": "client",
+    "baseUrl": "web",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -17,5 +17,6 @@
       "es7",
       "dom"
     ]
-  }
+  },
+  "files": ["web/app/app.module.ts", "web/main.ts", "web/polyfills.ts"]
 }

@@ -9,7 +9,7 @@ import { last } from '@angular/router/src/utils/collection';
 import { validateConfig } from '@angular/router/src/config';
 import * as RoomVM from '../../includes/viewModels/Room';
 import * as io from "socket.io-client";
-import * as environment from '../../../environments/environment';
+import { Environment }from '../../../environments/environment';
 // required to use jQuery
 declare var $: any;
 
@@ -24,6 +24,8 @@ export class DashboardComponent implements OnInit {
               private dashboardService: DashboardService,
               private routeControl: RouteHelper,
               private http: HttpClient) { }
+
+  private environment = new Environment();
 
   // main objects displayed on the dashboard
   public room: any;
@@ -43,7 +45,7 @@ export class DashboardComponent implements OnInit {
   private contextUri: string;
   
   // make a socket.io connection to the server
-  private socket = io('http://'+ environment.host + ':' + environment.socket_port);
+  private socket = io('http://'+ this.environment.host + ':' + this.environment.socket_port);
   
   ngOnInit() {
     // variable initialization

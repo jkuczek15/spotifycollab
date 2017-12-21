@@ -1,5 +1,5 @@
-// This file contains environment variables that are defined for the entire project
-// The scopes variable is used to access different portions of the Spotify API and is often changed
+// This is a bit of a hack so we can import environment variables into Javascript files as well as 
+// Typescript files
 
 module.exports = {
   production: false,

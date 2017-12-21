@@ -4,7 +4,7 @@ import { RouteHelper } from '../../../includes/utils/route-helper.module';
 import { WindowService } from '../../../includes/window.service';
 import { DashboardService } from '../../dashboard/dashboard.service';
 import { Observable } from 'rxjs/Observable';
-import * as environment from '../../../../environments/environment';
+import { Environment }from '../../../../environments/environment';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
@@ -34,9 +34,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   private searchFormatter: any;
   private searchTrack: any;
   private joined: boolean;
+  private environment = new Environment();
 
   // make a socket.io connection to the server
-  private socket = io('http://'+ environment.host + ':' + environment.socket_port);
+  private socket = io('http://'+ this.environment.host + ':' + this.environment.socket_port);
 
   constructor(private authentication: AuthService,
               private routeControl: RouteHelper,
@@ -62,14 +63,14 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // Initially, the active tab will be the home link
     this.activeNavID = 'home-link';
     this.currentPath = this.window.nativeWindow.location.pathname; 
-    var redirect_uri = 'http://'+ environment.host + ':' + environment.api_port + '/user';
+    var redirect_uri = 'http://'+ this.environment.host + ':' + this.environment.api_port + '/user';
   
     // Create the spotify authorization link
     this.spotifyLoginUrl = 'https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
-      client_id: environment.client_id,
-      scope: environment.scopes,
+      client_id: this.environment.client_id,
+      scope: this.environment.scopes,
       redirect_uri: redirect_uri
     });
     
