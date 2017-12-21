@@ -32,7 +32,7 @@
             <span [hidden]="!authentication.joined()">
               <li>
                 <input id="typeahead-template" type="text" class="form-control" 
-                  [(ngModel)]="track" [ngbTypeahead]="searchMusic" placeholder="Search Music..."  [resultTemplate]="rt" 
+                  [ngbTypeahead]="searchMusic" placeholder="Search Music..."  [resultTemplate]="rt" 
                   [inputFormatter]="searchFormatter" (selectItem)="addTrack($event)" />
               </li>
             </span>

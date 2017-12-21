@@ -32,7 +32,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   private arry: any;
   private searchMusic: any;
   private searchFormatter: any;
-  private searchTrack: any;
   private joined: boolean;
   private environment = new Environment();
 
@@ -58,7 +57,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     );
 
     // Initialize an input formatter for the autocomplete box
-    this.searchFormatter = (x: {name: string, artists: any }) => x.name + ' - ' + x.artists[0].name;
+    this.searchFormatter = (x: {name: string, artists: any }) => "";
+    //x.name + ' - ' + x.artists[0].name;
 
     // Initially, the active tab will be the home link
     this.activeNavID = 'home-link';
