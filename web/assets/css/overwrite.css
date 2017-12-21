@@ -42,8 +42,6 @@ blockquote{
   margin: 0 0 20px;
 }
 
-
-
 label,
 input,
 button,
@@ -64,6 +62,10 @@ select,
 textarea {
 	font-family:'Open Sans', Arial, sans-serif;
   font-size: 13px;
+  background-color: #343434;
+  color: white;
+  border: 0;
+  display: block;
 }
 
 select{
@@ -561,7 +563,6 @@ border-top:none;
 .dropdown-submenu:hover > a, 
 .dropdown-menu .active > a,
 .dropdown-menu .active > a:hover {
-  color: #ffffff;
   text-decoration: none;
   background-image: none;
   background-image: none;
@@ -569,6 +570,7 @@ border-top:none;
   background-image: none;
   background-image: none;
   background-repeat: none;
+  background-color: #23CF5F; 
   filter:none;
 }
 .dropdown-menu .sub-menu-level1, .dropdown-menu .sub-menu-level2 {left:100%;position:absolute;top:0;visibility:hidden;margin-top: 0;}
@@ -1042,6 +1044,9 @@ font-weight:600;
           border-radius: 2px;
 }
 
+.form-control {
+  size: 50;
+}
 
 
 

@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 // Custom Modules
 import { FormValidator } from '../includes/utils/form-validator.module';
@@ -31,6 +32,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 
 // Pipes
 import { DerpPipe } from '../includes/derp.pipe';
+import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead.module';
 
 // Initalize all our routes to point to specific components
 const appRoutes: Routes = [
@@ -72,7 +74,8 @@ appRoutes.push({
     ),
     Ng2PageScrollModule.forRoot(),
     FormValidator,
-    RouteHelper
+    RouteHelper,
+    NgbModule.forRoot()
   ],
   providers: [
     AuthService,

@@ -62,12 +62,12 @@ export class DashboardComponent implements OnInit {
 
     // check if we have room information stored in the session,
     // if we do, we should use this before displaying the 'join' form
-    var roomName = self.authentication.getRoom();
+    var room = self.authentication.getRoom();
     
-    if(roomName != null){
+    if(room != null){
       // subscribe the user to the room since refreshing the page
       // causes the user to get a new socket connection
-      self.socket.emit('subscribe', { roomName: roomName });
+      self.socket.emit('subscribe', { roomName: room.name });
     }// end if the session room is not null
 
     // create a handler for error messages, updating them as the server passes them back
@@ -104,7 +104,7 @@ export class DashboardComponent implements OnInit {
             }// end if not unauthorized error
           });
         }// end if the user just joined or created the playlist
-        self.authentication.saveRoom(data.room.name);
+        self.authentication.saveRoom(data.room);
       }// end if the room is null
      
       // console.log("Room update:", data);
