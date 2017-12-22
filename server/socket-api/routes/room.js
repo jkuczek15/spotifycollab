@@ -13,7 +13,7 @@ const io = require('socket.io')(server);
 
 // socket io
 io.on('connection', function (socket) {
-  
+ 
   socket.on('subscribe', function(data) {
     // subscribe the user to the room and emit
     // data related to that room
@@ -141,6 +141,31 @@ io.on('connection', function (socket) {
       // tell all the users in the room that the playlist has been updated
       io.sockets.in(room.name).emit('playlist-update');
     });
+  });
+
+  socket.on('init_refresh_token', function(data) {
+    var expires_in = data.expires_in;
+    var refresh_token = data.refresh_token;
+
+    // set an interval on the server so that we send a new access token to the
+    // client after their access token is expired
+    setInterval(() => {
+      var options = {
+        url: 'https://accounts.spotify.com/api/token',
+        form: {
+            refresh_token: refresh_token,
+            grant_type: 'refresh_token'
+        },
+        headers: {
+            'Authorization': 'Basic ' + (new Buffer(environment.client_id + ':' + environment.client_secret).toString('base64'))
+        },
+        json: true
+      };
+      request.post(options, function(error, response, body) {
+        // return the response that we get from Spotify
+        socket.emit('access_token_update', body);
+      });
+    }, (expires_in-100)*1000);
   });
 
   socket.on('room-broadcast', function(data) {

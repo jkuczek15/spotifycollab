@@ -44,8 +44,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
               private dashboardService: DashboardService) { }
 
   ngOnInit() {
-    let self = this;
-
     // Initialize the joined variable for showing and hiding certain functions
     this.joined = this.authentication.joined();
 
@@ -75,11 +73,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     });
     
     // Function to be called each time the route changes
-    this.routeControl.onRouteChange(function(data) {
-      self.loggedIn = self.authentication.loggedIn();
-      self.currentPath = self.window.nativeWindow.location.pathname;
-      if(self.currentPath !== '/'){
-        self.removeActive(self.activeNavID);
+    this.routeControl.onRouteChange((data) => {
+      this.loggedIn = this.authentication.loggedIn();
+      this.currentPath = this.window.nativeWindow.location.pathname;
+      if(this.currentPath !== '/'){
+        this.removeActive(this.activeNavID);
       }// end if on the index page
     });
   }// end ngOnInit function

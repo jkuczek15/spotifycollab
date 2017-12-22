@@ -32,7 +32,7 @@ module.exports = {
 };
 
 /*
-  GET - /user?spotify_id=<id> - Return information about the user given a authorization code
+  GET - /user?code=<code> - Return information about the user given a authorization code
   @param: Spotify authorization code
   @return: User Information
  */
@@ -71,12 +71,11 @@ function get(req, res) {
                 user['access_token'] = access.access_token;
                 user['refresh_token'] = access.refresh_token;
                 user['expires_in'] = access.expires_in;
-                user['access_time'] = new Date().getTime() / 1000;
+                user['login_time'] = new Date().getTime() / 1000;
             
                 // redirect to the dashboard with the user data in the URL
                 res.redirect('http://' + environment.host + ':' + environment.ws_port + '/dashboard#' + querystring.stringify(user));
             });
-            
         } else {
             res.redirect('/#' + querystring.stringify({
                 error: 'invalid_token'

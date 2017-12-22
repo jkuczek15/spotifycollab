@@ -27,15 +27,13 @@ export class AppComponent implements OnInit {
               }// end appComponent constructor
 
   ngOnInit() {
-    let self = this;
-
     // check if we have a new user in the url parameters
     var user = this.getHashParams();
-    
-    // TODO, this needs to be validated much better
-    if(Object.keys(user).length !== 0 || user.constructor !== Object){
+   
+    if(Object.keys(user).length !== 0 || user.constructor !== Object) {
       if(!this.authentication.loggedIn()){
         this.authentication.saveUser(user);
+        this.authentication.init_refresh_token(user);
       }// end if the user is not logged in     
     }// end if we have valid hash params
     
@@ -47,22 +45,22 @@ export class AppComponent implements OnInit {
     };
 
     // Function to be called each time the route changes
-    this.routeControl.onRouteChange(function() {
+    this.routeControl.onRouteChange(() => {
       // scroll to the top of the page
       window.scrollTo(0,0);
       // grab the current URL
-      let url = self.router.url;
+      let url = this.router.url;
 
-      if(self.authentication.loggedIn()) {
+      if(this.authentication.loggedIn()) {
         // user is logged in, determine when to show sidebars
-        self.displayHandler(url, 'show_sidebar_left');
+        this.displayHandler(url, 'show_sidebar_left');
       } else {
         // hide the left sidebar if the user is not logged in
-        self.show_sidebar_left = false;
+        this.show_sidebar_left = false;
       }// end if the user is logged in, show the sidebar
 
-      self.displayHandler(url, 'show_item_spacing');  
-      self.displayHandler(url, 'show_sidebar_right');
+      this.displayHandler(url, 'show_item_spacing');  
+      this.displayHandler(url, 'show_sidebar_right');
     });
   }// end ngOninit function
 

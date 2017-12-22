@@ -10,7 +10,7 @@ export class HttpClient {
               private authentication: AuthService) {}
 
   createAuthorizationHeader(headers: Headers) {
-    headers.append('Authorization', 'Bearer ' + this.authentication.getToken()); 
+    headers.append('Authorization', 'Bearer ' + this.authentication.getToken());
   }// end function createAuthorizationHeader
 
   createCORSHeader(headers: Headers){
