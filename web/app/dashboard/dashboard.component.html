@@ -1,15 +1,14 @@
-<div class="container">
 <div class="row">
     <div class="col-xs-8">
         <h1>
-            Dashboard
-            <span [hidden]="!joined"> - {{ room.name }}</span>
-            <span [hidden]="!joined"> - 
+            <span [hidden]="joined">Dashboard</span>
+            <span [hidden]="!joined">{{ room.name }} - 
                 <button type="button" class="btn btn-danger">
                     <span [hidden]="isHost" (click)="leaveRoom()">Leave</span>
                     <span [hidden]="!isHost" (click)="endRoom()">End Room</span>    
                 </button>
             </span>
+
         </h1>
     </div>
     <div class="col-xs-4">
@@ -67,23 +66,21 @@
             </div>-->
             <div class="col-sm-6">
                 <h4>Queue:</h4>
-                <div class="pre-scrollable" style="max-height: 70vh">
+                <div class="pre-scrollable " style="max-height: 70vh">
                     <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Artist</th>
-                                    <th scope="col">Album</th>
+                                    <th scope="col" *isDesktop>Album</th>
                                     <th scope="col" [hidden]="!isHost">Options</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of queue; let i = index" [ngClass]="{green: item.track.id == currentlyPlaying.id && i == 0}">
-                                    <td>{{ i+1 }}</td>
                                     <td><span >{{ item.track.name }}</span></td>
                                     <td>{{ item.track.artists[0].name }}</td>
-                                    <td>{{ item.track.album.name }}</td>
+                                    <td *isDesktop>{{ item.track.album.name }}</td>
                                     <td [hidden]="!isHost || i == 0">
                                         <span class="glyphicon glyphicon-play" (click)="play(i)"></span> &nbsp;
                                         <span class="glyphicon glyphicon-minus" (click)="removeTrack(item.track, i)"></span>
@@ -98,28 +95,25 @@
                 <h4>Your songs:</h4>
                 <div class="pre-scrollable" style="max-height: 70vh">
                     <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Artist</th>
-                                <th scope="col">Album</th>
-                                <th scope="col">Options</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let item of library; let i = index">
-                                <td>{{ i+1 }}</td>
-                                <td>{{ item.track.name }}</td>
-                                <td>{{ item.track.artists[0].name }}</td>
-                                <td>{{ item.track.album.name }}</td>
-                                <td><span (click)="addTrack(item)" class="glyphicon glyphicon-plus"></span></td>
-                            </tr>
-                        </tbody>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Artist</th>
+                                    <th scope="col" *isDesktop>Album</th>
+                                    <th scope="col">Options</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of library; let i = index">
+                                    <td>{{ item.track.name }}</td>
+                                    <td>{{ item.track.artists[0].name }}</td>
+                                    <td *isDesktop>{{ item.track.album.name }}</td>
+                                    <td><span (click)="addTrack(item)" class="glyphicon glyphicon-plus"></span></td>
+                                </tr>
+                            </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>

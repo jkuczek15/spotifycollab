@@ -5,6 +5,7 @@ import { HttpModule } from '@angular/http';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ResponsiveModule, ResponsiveConfig } from 'ng2-responsive';
 
 // Custom Modules
 import { FormValidator } from '../includes/utils/form-validator.module';
@@ -52,6 +53,22 @@ appRoutes.push({
   redirectTo: '/'
 });
 
+// Mobile responsive breakpoint configuration
+let config = {
+  breakPoints: {
+      xs: {max: 600},
+      sm: {min: 601, max: 959},
+      md: {min: 960, max: 1279},
+      lg: {min: 1280, max: 1919},
+      xl: {min: 1920}
+  },
+  debounceTime: 100 // allow to debounce checking timer
+};
+
+export function ResponsiveDefinition(){ 
+  return new ResponsiveConfig(config);
+};
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -75,13 +92,18 @@ appRoutes.push({
     Ng2PageScrollModule.forRoot(),
     FormValidator,
     RouteHelper,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    ResponsiveModule
   ],
   providers: [
     AuthService,
     DashboardService,
     HttpClient,
-    WindowService
+    WindowService,
+    {
+      provide: ResponsiveConfig, 
+      useFactory: ResponsiveDefinition 
+    }
   ],
   bootstrap: [AppComponent],
   exports: [

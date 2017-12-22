@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
     this.hiddenUrls = {
       no_item_spacing:  ['/', '/login', '/register'],
       no_sidebar_right: ['/', '/login', '/register', '/dashboard'],
-      no_sidebar_left:  ['/', '/login', '/register']
+      no_sidebar_left:  ['/', '/login', '/register', '/dashboard']
     };
 
     // Function to be called each time the route changes

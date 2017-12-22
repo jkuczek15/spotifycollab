@@ -17,7 +17,9 @@ export class AuthService {
   private environment = new Environment();
 
   // make a socket.io connection to the server
-  private socket = io('http://'+ this.environment.host + ':' + this.environment.socket_port);
+  // make sure we are using web sockets instead of long polling
+  public socket = io('http://'+ this.environment.host + ':' + this.environment.socket_port, 
+                      { transports: ['websocket'], upgrade: false });
 
   constructor(private http: Http,
               private winRef: WindowService,

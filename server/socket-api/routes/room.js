@@ -8,8 +8,16 @@ var methodOverride = require('method-override');
 var request = require('request');
 var environment = require('../../../environments/environment');
 
-// initialize socket.io
-const io = require('socket.io')(server);
+// initialize socket.io with custom options
+// note that by default, socket.io uses long http polling
+// instead of web sockets, we configure this below
+const io = require('socket.io')(server, {
+  serveClient: false,
+  pingInterval: 15000,
+  pingTimeout: 100000,
+  cookie: false,
+  transports: ['websocket']
+});
 
 // socket io
 io.on('connection', function (socket) {

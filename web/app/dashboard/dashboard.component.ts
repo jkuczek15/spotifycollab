@@ -44,8 +44,8 @@ export class DashboardComponent implements OnInit {
   private error: string;
   private contextUri: string;
   
-  // make a socket.io connection to the server
-  private socket = io('http://'+ this.environment.host + ':' + this.environment.socket_port);
+  // use the socket connection provided by the authentication service
+  private socket = this.authentication.socket;
   
   ngOnInit() {
     // variable initialization

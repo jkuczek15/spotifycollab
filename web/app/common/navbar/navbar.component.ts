@@ -34,9 +34,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   private searchFormatter: any;
   private joined: boolean;
   private environment = new Environment();
-
-  // make a socket.io connection to the server
-  private socket = io('http://'+ this.environment.host + ':' + this.environment.socket_port);
+  
+  // use the socket connection provided by the authentication service
+  private socket = this.authentication.socket;
 
   constructor(private authentication: AuthService,
               private routeControl: RouteHelper,
