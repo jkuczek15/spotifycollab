@@ -145,32 +145,18 @@ export class HomeComponent implements AfterViewInit {
 	
     // cache container
     var $container = $('#portfolio-wrap');
-    $.browser.safari = ($.browser.webkit && !(/chrome/.test(navigator.userAgent.toLowerCase())));	
-    
-    if($.browser.safari) { 	
-         // initialize isotope
-        $container.isotope({
-        animationEngine : 'jquery',
+    $container.isotope({
+        animationEngine : 'best-available',
         animationOptions: {
             duration: 200,
             queue: false
         },
         layoutMode: 'fitRows'
-        });
-    } else {	
-        $container.isotope({
-            animationEngine : 'best-available',
-            animationOptions: {
-                duration: 200,
-                queue: false
-            },
-            layoutMode: 'fitRows'
-        });	
-        
-        $(window).resize(function() {
-            $container.isotope('reLayout');
-        });
-    }// end if we are in safari browser
+    });	
+    
+    $(window).resize(function() {
+        $container.isotope('reLayout');
+    });
 
     // filter items when filter link is clicked
     $('#filters a').click(function(){
