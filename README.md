@@ -1,14 +1,15 @@
 # Spotify Collab
 
-Node.js, Express, Angular 4, Swagger, Socket.io
+Node.js, Express, Angular 5, Swagger, Socket.io
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.2.0.
 
 # Installing Software
 
-1. Install Node.js and npm from [here](https://nodejs.org/en/download/).
-2. Run `npm install` inside the project directory to install missing dependencies.
-3. Run the following three commands:
+1. Install Node.js and npm from [here](https://nodejs.org/en/download/). Ensure you can run `node` and `npm` from a terminal.
+2. Run `npm install` inside the project directory, `spotifycollab`, to install missing dependencies.
+3. Run `npm install` inside the `spotifycollab/rest-api` directory to install missing dependencies for the Swagger project.
+4. Run the following three commands:
 
     `npm install -g nodemon`
 
@@ -16,13 +17,12 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
     `npm install -g angular-cli`
 
-4. Install [MongoDB](https://www.mongodb.com/download-center#community) for a database server. It is recommended that you add the MongoDB `bin` folder to your PATH environment variable. 
-5. That's it, if you've made it this far, you're ready to run the project.
+5. Install [MongoDB](https://www.mongodb.com/download-center#community) for a database server. It is recommended that you add the MongoDB `bin` folder to your PATH environment variable. 
 
 # Run the project
-1. Navigate to the folder titled 'rest-api' and run the command `swagger project start`, this starts the rest-api which we will interact with both from the client and the server.
+1. Navigate to the folder titled 'rest-api' and run the command `swagger project start`, this starts the rest-api which we will interact with both from the client and the server. 
 2. Run a mongodb database server. On Linux, open a new terminal and type `mongod`. On Windows, the executable file is something similar to the following path:  `./Program Files/MongoDB/Server/{version}/bin/mongod`
-3. Navigate to the project directory and run `ng build --watch`. This watches the client side for changes.
+3. Navigate to the project directory and run `ng build --watch`. This builds the project and also watches the client side for changes.
 4. Navigate to the project directory and run `nodemon`, this starts the web server along with socket.io on two separate ports. This also watches the server for changes.
 
 ## Rest API
