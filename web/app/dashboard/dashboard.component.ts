@@ -9,6 +9,7 @@ import { last } from '@angular/router/src/utils/collection';
 import { validateConfig } from '@angular/router/src/config';
 import * as RoomVM from '../../includes/viewModels/Room';
 import * as io from "socket.io-client";
+import * as ons from 'onsenui';
 import { Environment }from '../../../environments/environment';
 // required to use jQuery
 declare var $: any;
@@ -181,6 +182,10 @@ export class DashboardComponent implements OnInit {
       this.socket.emit('join-room', { user: this.user, roomName: this.roomName });
     }// end if the room name is empty
   }// end function joinRoom
+
+  doSomething() {
+    ons.notification.alert("Hello");
+  }
 
   hostRoom(){
     if(this.roomName.search(/^$|\s+/) == 0){

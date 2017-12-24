@@ -2,17 +2,18 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ResponsiveModule, ResponsiveConfig } from 'ng2-responsive';
 
 // Custom Modules
 import { FormValidator } from '../includes/utils/form-validator.module';
 import { RouteHelper } from '../includes/utils/route-helper.module';
 
-// External Modules (NPM)
+// External Modules
 import { Ng2PageScrollModule } from 'ng2-page-scroll';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ResponsiveModule, ResponsiveConfig } from 'ng2-responsive';
+import { OnsenModule } from 'ngx-onsenui';
 
 // Services
 import { AuthService } from './auth/auth.service';
@@ -20,15 +21,15 @@ import { HttpClient } from '../includes/http-client.service'
 import { WindowService } from '../includes/window.service'
 import { DashboardService } from './dashboard/dashboard.service';
 
-// Main Application Components
+// Application Components
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './common/navbar/navbar.component';
 import { FooterComponent } from './common/footer/footer.component';
 import { SidebarLeftComponent } from './common/sidebar-left/sidebar-left.component';
 import { SidebarRightComponent } from './common/sidebar-right/sidebar-right.component';
-import { HomeComponent } from './home/home.component';
 
 // Router Components
+import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 // Pipes
@@ -82,6 +83,7 @@ export function ResponsiveDefinition(){
   ],
   imports: [
     BrowserModule,
+    OnsenModule,
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
@@ -108,6 +110,9 @@ export function ResponsiveDefinition(){
   bootstrap: [AppComponent],
   exports: [
     DerpPipe
-  ]
+  ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA,
+  ],
 })
 export class AppModule { }
