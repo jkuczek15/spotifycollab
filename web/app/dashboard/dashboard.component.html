@@ -4,13 +4,23 @@
     <div class="right toolbar__right toolbar-text"></div>
 </ons-toolbar>
 <div class="background"></div>
-<div class="content" style="color: white">           <!-- Content of the page -->
-    Room: {{ room.name }}
+<div class="content" style="color: white"><br/>           <!-- Content of the page -->
+    Room: {{ room.name }} - <ons-button (click)="endRoom()">End Room</ons-button>
+    <div class="music-player">
+        <span [hidden]="isPlaying">
+            <span class="glyphicon glyphicon-play" style="margin-left: 10px" (click)="play()"></span>
+        </span>
+        <span [hidden]="!isPlaying">
+            <span class="glyphicon glyphicon-pause" style="margin-left: 10px" (click)="pause()"></span>
+        </span>
+        <span class="glyphicon glyphicon-forward" style="margin-left: 10px" (click)="nextTrack()"></span>
+    </div>
+    {{ currentlyPlaying.name }}<br/>
+    <span *ngFor="let artist of currentlyPlaying.artists; let isLast=last">
+        <small>{{ artist.name }}</small>{{isLast ? '' : ', '}}
+    </span>
 </div>
     
-    
-
-
 <!-- <div class="row">
     <div class="col-xs-8">
         <h1>

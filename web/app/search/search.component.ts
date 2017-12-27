@@ -15,18 +15,24 @@ export class SearchComponent implements OnInit {
   private searchString: string = "";
   private searchItems: any;
   private hideTabs: boolean = false;
+  private socket = this.authentication.socket;
 
   constructor(private searchService: SearchService,
               private authentication: AuthService) { }
 
-  ngOnInit() {
-    
-  }// end ngOnInit
+  ngOnInit() { }// end ngOnInit
 
   searchFocus(){
     this.hideTabs = true;
-    console.log('teest');
   }
+
+  addTrack(track){
+    // adding a track is avaiable to everyone, this means we need to emit a 
+    // socket message and the socket will perform the actual API request
+    // to Spotify, this is because we won't have the host's API access token
+    // when making a request from a normal user
+    this.socket.emit('add-track', { track: track, room: this.authentication.getRoom() });
+  }// end function add track
 
   searchMusic() {
     if(this.searchString){

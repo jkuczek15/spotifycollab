@@ -23,6 +23,7 @@ import { WindowService } from '../includes/window.service'
 import { DashboardService } from './dashboard/dashboard.service';
 import { LibraryService } from './library/library.service';
 import { SearchService } from './search/search.service';
+import { QueueService } from './queue/queue.service';
 import { FormService } from './form.service';
 
 // Application Components
@@ -91,6 +92,7 @@ appRoutes.push({
     HttpClient,
     LibraryService,
     SearchService,
+    QueueService,
     WindowService
   ],
   bootstrap: [AppComponent],

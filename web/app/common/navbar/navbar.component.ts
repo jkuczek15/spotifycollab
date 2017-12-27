@@ -47,13 +47,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // Initialize the joined variable for showing and hiding certain functions
     this.joined = this.authentication.joined();
 
-    // Initialize the autocomplete search box with the search music service
-    this.searchMusic = (text$: Observable<string>) => text$
-      .debounceTime(200)
-      .distinctUntilChanged()
-      .switchMap(term => this.dashboardService.getPlaylist(term)     
-    );
-
     // Initialize an input formatter for the autocomplete box
     this.searchFormatter = (x: {name: string, artists: any }) => "";
     //x.name + ' - ' + x.artists[0].name;

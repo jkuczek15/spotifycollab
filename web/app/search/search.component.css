@@ -26,6 +26,10 @@
     line-height: normal;
 }
 
+.text-input--material__label {
+    left: 28px;
+}
+
 table {
     border-spacing: 0;
 }

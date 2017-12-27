@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { AuthService } from '../auth/auth.service';
-import { DashboardService } from './dashboard.service'
+import { DashboardService } from './dashboard.service';
+import { QueueService } from '../queue/queue.service';
 import { HttpClient } from '../../includes/http-client.service';
 import { DerpPipe } from '../../includes/derp.pipe';
 import { RouteHelper } from '../../includes/utils/route-helper.module';
@@ -24,6 +25,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(private authentication: AuthService,
               private dashboardService: DashboardService,
+              private queueService: QueueService,
               private routeControl: RouteHelper,
               private http: HttpClient) { }
 
@@ -48,9 +50,6 @@ export class DashboardComponent implements OnInit {
   
   // use the socket connection provided by the authentication service
   private socket = this.authentication.socket;
-
-  
-
 
   ngOnInit() {
     // variable initialization
@@ -98,34 +97,11 @@ export class DashboardComponent implements OnInit {
       }else{
         // update the room with the new information
         this.room = data.room;
-        if(data.joined) {
-          // if they recently joined, we need to get the tracks from the playlist
-          this.dashboardService.getPlaylist(this.room.playlistUri+'/tracks').then((data: any) => {
-            // successful response, set the queue data
-            this.queue = data.items;
-            this.joined = true;
-          }, (err) => {
-            if(err.status !== 401){
-              console.log(err);
-            }// end if not unauthorized error
-          });
-        }// end if the user just joined or created the playlist
+        this.joined = true;
         this.authentication.saveRoom(data.room);
       }// end if the room is null
-     
+      
       // console.log("Room update:", data);
-    });
-
-    // create a handler for when the playlist is updated or changed
-    this.socket.on('playlist-update', (data) => {
-      this.dashboardService.getPlaylist(this.room.playlistUri+'/tracks').then((data: any) => {
-        // successful response, set the queue data
-        this.queue = data.items;
-      }, (err) => {
-        if(err.status !== 401){
-          console.log(err);
-        }// end if not unauthorized error
-      });
     });
 
     // create a handler for when the host's playback changes
@@ -148,7 +124,7 @@ export class DashboardComponent implements OnInit {
     // set up an interval function to run and request playlist data from Spotify
     // this is the only way to ensure that we have the same playback data as Spotify
     Observable.interval(playbackRefreshInterval).subscribe(x => {
-      if(!this.joined || !this.isHost || this.queue === undefined || !this.authentication.loggedIn()) return;
+      if(!this.joined || !this.authentication.isHost() || this.queue === undefined || !this.authentication.loggedIn()) return;
       this.dashboardService.currentlyPlaying().then((data: any) => {
         // successful response, music should now be playing via
         // the spotify application
@@ -159,13 +135,7 @@ export class DashboardComponent implements OnInit {
         }// end if not unauthorized error
       });
     });
-
-    // set the isHost variable so that we can display different items
-    // based on the host condition
-    this.isHost = this.authentication.isHost();
   }// end ngOnInit function
-
-
 
   leaveRoom(){
     this.socket.emit('leave-room', { user: this.user, room: this.room });

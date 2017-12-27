@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LibraryService } from './library.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'ons-page[library]',
@@ -8,9 +9,11 @@ import { LibraryService } from './library.service';
 })
 export class LibraryComponent implements OnInit {
 
+  private socket = this.authentication.socket;
   private library: any;
 
-  constructor(private libraryService: LibraryService) { }
+  constructor(private libraryService: LibraryService,
+              private authentication: AuthService) { }
 
   ngOnInit() {
     this.getLibrary();
@@ -27,5 +30,13 @@ export class LibraryComponent implements OnInit {
       }// end if not unauthorized error
     });
   }// end function getLibrary
+
+  addTrack(track){
+    // adding a track is avaiable to everyone, this means we need to emit a 
+    // socket message and the socket will perform the actual API request
+    // to Spotify, this is because we won't have the host's API access token
+    // when making a request from a normal user
+    this.socket.emit('add-track', { track: track, room: this.authentication.getRoom() });
+  }// end function add track
 
 }// end class LibraryComponent

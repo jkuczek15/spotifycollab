@@ -5,5 +5,20 @@
 </ons-toolbar>
 <div class="background"></div>
 <div class="content" style="color: white">           <!-- Content of the page -->
-    Content
+    <ons-list modifier="material" >
+        <ons-list-item modifier="material" tappable="true" *ngFor="let item of queue">
+            <div class="left">
+                <table>
+                    <tr>
+                        <td>{{ item.track.name }}</td>
+                    </tr>
+                    <tr>
+                        <span *ngFor="let artist of item.track.artists; let isLast=last">
+                            <small>{{ artist.name }}</small>{{isLast ? '' : ', '}}
+                        </span>
+                    </tr>
+                </table>
+            </div>
+        </ons-list-item>
+    </ons-list>
 </div>

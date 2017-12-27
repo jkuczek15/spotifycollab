@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '../../includes/http-client.service';
-import { AuthService } from '../auth/auth.service';
 
 @Injectable()
-export class LibraryService {
+export class QueueService {
 
   constructor(private http: HttpClient) { }
 
-  getLibrary() {
+  getPlaylist(playlistUri){
     return new Promise((resolve, reject) => {
-      this.http.get('https://api.spotify.com/v1/me/tracks?limit=50')
+      this.http.get(playlistUri)
         .map(res => res.json())
         .subscribe(res => {
           resolve(res);
@@ -17,6 +16,6 @@ export class LibraryService {
           reject(err);
         });
     });
-  }// end function getLibrary
+  }// end function getPlaylist
 
-}// end class LibraryService
+}// end class QueueService

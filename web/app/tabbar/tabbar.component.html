@@ -1,4 +1,4 @@
-<ons-tabbar [page]="dashboard" [hide-tabs]="hideTabs">
+<ons-tabbar [page]="dashboard" [hide-tabs]="hideTabs" (postchange)="refreshQueue()">
   <ons-tab label="Home" active [page]="dashboard" icon="ion-home"></ons-tab>
   <ons-tab label="Queue" [page]="queue" icon="ion-ios-list"></ons-tab>
   <ons-tab label="Search" [page]="search" icon="ion-search"></ons-tab>

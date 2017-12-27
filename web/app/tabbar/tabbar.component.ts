@@ -11,22 +11,23 @@ declare var $: any;
 @Component({
   selector: 'tabbar',
   templateUrl: './tabbar.component.html',
-  styleUrls: ['./tabbar.component.css'],
+  styleUrls: ['./tabbar.component.css']
 })
-export class TabbarComponent implements AfterViewInit {
+export class TabbarComponent {
 
   private hideTabs: boolean = false;
+  private socket = this.authentication.socket;
 
+  // initialize our tab components
   dashboard = DashboardComponent;
   queue = QueueComponent;
   library = LibraryComponent;
   search = SearchComponent;
 
-  constructor() {
-  }
+  constructor(private authentication: AuthService) {}
 
-  ngAfterViewInit() {
-    $('#test').html('bitch');
-  }// end after view init
+  refreshQueue() {
+    this.socket.emit('playlist-broadcast-self');
+  }// end function refreshQueue
 
 }// end class TabbarComponent

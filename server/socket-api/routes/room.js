@@ -192,6 +192,10 @@ io.on('connection', function (socket) {
     io.sockets.in(roomName).emit('playlist-update');
   });
 
+  socket.on('playlist-broadcast-self', function(data) {
+    socket.emit('playlist-update');
+  });
+
   socket.on('playback-broadcast', function(data) {
     var playback = data.playback;
     var roomName = data.roomName;

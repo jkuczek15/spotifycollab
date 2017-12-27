@@ -6,7 +6,7 @@
 <div class="background"></div>
 <div class="content" style="color: white">           <!-- Content of the page -->
     <ons-list modifier="material" >
-        <ons-list-item modifier="material" *ngFor="let item of library">
+        <ons-list-item modifier="material" tappable="true" *ngFor="let item of library" (click)="addTrack(item.track)">
             <div class="left">
                 <table>
                     <tr>

@@ -56,14 +56,22 @@ export class AppComponent implements OnInit {
     this.socket.on('error-message', (data) => {
       ons.notification.alert(data);
     });
-
     // create a handler for when the room is updated or changed
     this.socket.on('room-update', (data) => {
       // get the new room information
       // first check if we have a null room update
       // this means that user left the room or host user ended the room
-      this.authentication.saveRoom(data.room);
-      this.joined = true;
+      if(data.room == null) {
+        // unsubscribe the user from the room and reset the screen
+        this.authentication.removeRoom();
+        this.joined = false;
+      }else{
+        // get the new room information
+        // first check if we have a null room update
+        // this means that user left the room or host user ended the room
+        this.authentication.saveRoom(data.room);
+        this.joined = true;
+      }// end if we have a null room update
     });
   }// end ngOninit function
 
@@ -92,6 +100,7 @@ export class AppComponent implements OnInit {
       this.formService.createPlaylist(this.user.id, data).then((data: any) => {
         // successfully created a new Spotify playlist
         // show the user the dashboard with their new playlist
+        this.authentication.setHost(true);
         this.socket.emit('create-room', { user: this.user, roomName: this.roomName, playlistUri: data.href, playlistId: data.id, contextUri: data.uri });
       }, (err) => {
         if(err.status !== 401){
