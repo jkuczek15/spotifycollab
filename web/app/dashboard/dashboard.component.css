@@ -6,6 +6,18 @@
     border-radius: 10px;
 }
 
-.green{
+.green {
     background-color: #23CF5F;
+}
+
+.background {
+    background-color: #1a1a1a;
+}
+
+.toolbar-background {
+    background-color: #006699;
+}
+
+.toolbar-text {
+    color: white;
 }

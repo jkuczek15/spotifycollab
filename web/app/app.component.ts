@@ -2,8 +2,10 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouteHelper } from '../includes/utils/route-helper.module';
 import { AuthService } from './auth/auth.service';
-import { PageScrollConfig } from 'ng2-page-scroll';
-import { DoCheck, AfterContentInit } from '@angular/core/src/metadata/lifecycle_hooks';
+import { FormService } from './form.service';
+import { Environment }from '../../environments/environment';
+import * as ons from 'onsenui';
+var querystring = require('querystring');
 
 @Component({
   selector: 'app-root',
@@ -12,85 +14,92 @@ import { DoCheck, AfterContentInit } from '@angular/core/src/metadata/lifecycle_
 })
 export class AppComponent implements OnInit {
   
-  // Boolean variables to keep track if we are displaying certain elements
-  public show_sidebar_left: boolean = true;
-  public show_sidebar_right: boolean = true;
-  public show_item_spacing: boolean = false;
-  private hiddenUrls: any;
+  // page components for the tab bar once a user
+  // successfully joins a room
+  
+  private loggedIn: boolean;
+  private joined: boolean;
+  private spotifyLoginUrl: string;
+  private roomName: string = "";
+  private user: any;
+  private environment: any = new Environment();
+  private socket: any = this.authentication.socket;
 
-  constructor(private router: Router,
-              private routeControl: RouteHelper,
-              private authentication: AuthService) 
-              {
-                PageScrollConfig.defaultScrollOffset = 40;
-                PageScrollConfig.defaultDuration = 350; // anchor link scroll speed
-              }// end appComponent constructor
+  constructor(private authentication: AuthService,
+              private formService: FormService,
+              private router: Router) { }// end appComponent constructor
 
   ngOnInit() {
+    var redirect_uri = 'http://'+ this.environment.host + ':' + this.environment.api_port + '/user';
+    this.spotifyLoginUrl = 'https://accounts.spotify.com/authorize?' +
+        querystring.stringify({
+        response_type: 'code',
+        client_id: this.environment.client_id,
+        scope: this.environment.scopes,
+        redirect_uri: redirect_uri
+    });
+
     // check if we have a new user in the url parameters
     var user = this.getHashParams();
    
     if(Object.keys(user).length !== 0 || user.constructor !== Object) {
-      if(!this.authentication.loggedIn()){
-        this.authentication.saveUser(user);
-        this.authentication.init_refresh_token(user);
-      }// end if the user is not logged in     
+      this.authentication.saveUser(user);
+      this.authentication.init_refresh_token(user);
     }// end if we have valid hash params
-    
-    // List of URL's to determine if we are showing/hiding certain elements
-    this.hiddenUrls = {
-      no_item_spacing:  ['/', '/login', '/register'],
-      no_sidebar_right: ['/', '/login', '/register', '/dashboard'],
-      no_sidebar_left:  ['/', '/login', '/register', '/dashboard']
-    };
 
-    // Function to be called each time the route changes
-    this.routeControl.onRouteChange(() => {
-      // scroll to the top of the page
-      window.scrollTo(0,0);
-      // grab the current URL
-      let url = this.router.url;
+    // check if the user is logged in and if the user has joined a room
+    this.user = this.authentication.getUser();
+    this.loggedIn = this.authentication.loggedIn();
+    this.joined = this.authentication.joined();
 
-      if(this.authentication.loggedIn()) {
-        // user is logged in, determine when to show sidebars
-        this.displayHandler(url, 'show_sidebar_left');
-      } else {
-        // hide the left sidebar if the user is not logged in
-        this.show_sidebar_left = false;
-      }// end if the user is logged in, show the sidebar
+    // create a handler for error messages sent to us from the server
+    this.socket.on('error-message', (data) => {
+      ons.notification.alert(data);
+    });
 
-      this.displayHandler(url, 'show_item_spacing');  
-      this.displayHandler(url, 'show_sidebar_right');
+    // create a handler for when the room is updated or changed
+    this.socket.on('room-update', (data) => {
+      // get the new room information
+      // first check if we have a null room update
+      // this means that user left the room or host user ended the room
+      this.authentication.saveRoom(data.room);
+      this.joined = true;
     });
   }// end ngOninit function
 
-  displayHandler(url, key) {
-    // handler for hiding certain components
-    let hiddenUrls = this.hiddenUrls[key.replace('show', 'no')];
-    
-    if(hiddenUrls.length === 0) {
-      // if we have a length of 0, we want to show this everywhere
-      this[key] = true;
-      return;
-    }// end if hiddenUrls.length == 0
+  join() {
+    if(this.roomName.search(/^$|\s+/) == 0){
+      // the room name is empty
+      ons.notification.alert("Please enter a room name.");
+    }else{
+      // the room name is not empty
+      this.socket.emit('join-room', { user: this.authentication.getUser(), roomName: this.roomName });
+    }// end if the room name is empty
+  }// end function join
 
-    for(let str of hiddenUrls) {
-      // for loop over all routes to hide
-      if(url !== '/' && str !== '/') {
-        this[key] = url.indexOf(str) == -1;
-        if(!this[key]) {
-          break;
-        }// end if
-      } else if(url !== '/' && str === '/' && hiddenUrls.length === 1) {
-        // we have the home page in our array of length 1
-        this[key] = true;
-      }else {
-        this[key] = false;  
-      }// end if we are not on home page
-
-    }// end for loop over no_sidebar_right
-
-  }// end function displayHandler
+  host() {
+    if(this.roomName.search(/^$|\s+/) == 0){
+      // the room name is empty
+      ons.notification.alert("Please enter a room name.");
+    }else{
+      // the room name is not empty, create the playlist
+      // and initialize the room with an empty queue
+      var data = {
+        description: "Boom room playlist",
+        public: false,
+        name: "Boom Room - " + this.roomName
+      };
+      this.formService.createPlaylist(this.user.id, data).then((data: any) => {
+        // successfully created a new Spotify playlist
+        // show the user the dashboard with their new playlist
+        this.socket.emit('create-room', { user: this.user, roomName: this.roomName, playlistUri: data.href, playlistId: data.id, contextUri: data.uri });
+      }, (err) => {
+        if(err.status !== 401){
+          console.log(err);
+        }// end if not unauthorized error
+      });
+    }// end if the room name is empty
+  }// end function host
 
   /**
     * Obtains parameters from the hash of the URL

@@ -8,18 +8,6 @@ export class DashboardService {
 
   constructor(private http: HttpClient) { }
 
-  getLibrary() {
-    return new Promise((resolve, reject) => {
-      this.http.get('https://api.spotify.com/v1/me/tracks?limit=50')
-        .map(res => res.json())
-        .subscribe(res => {
-          resolve(res);
-        }, (err) => {
-          reject(err);
-        });
-    });
-  }// end function getChatByRoom
-
   getPlaylist(playlistUri){
     return new Promise((resolve, reject) => {
       this.http.get(playlistUri)
@@ -135,21 +123,6 @@ export class DashboardService {
     });
   }// end function currentlyPlaying
 
-  searchMusic(query){
-    if(query){
-      return new Promise((resolve, reject) => {
-        this.http.get('https://api.spotify.com/v1/search?q='+encodeURIComponent(query)+'&type=track', null)
-          .map(res => res.json().tracks.items)
-          .subscribe(res => {
-            resolve(res);
-          }, (err) => {
-            reject(err);
-          });
-      });
-    }else{
-      return of([]);
-    }// end if we have a valid search query
-    
-  }// end function searchMusic
+  
 
 }// end class DashboardService

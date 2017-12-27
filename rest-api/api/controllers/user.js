@@ -74,7 +74,7 @@ function get(req, res) {
                 user['login_time'] = new Date().getTime() / 1000;
             
                 // redirect to the dashboard with the user data in the URL
-                res.redirect('http://' + environment.host + ':' + environment.ws_port + '/dashboard#' + querystring.stringify(user));
+                res.redirect('http://' + environment.host + ':' + environment.ws_port + '/form#' + querystring.stringify(user));
             });
         } else {
             res.redirect('/#' + querystring.stringify({

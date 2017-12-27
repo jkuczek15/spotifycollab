@@ -1,15 +1,64 @@
-<app-navbar></app-navbar>
-<div class="flex-container container-fluid row content-flex">    
-  <div class="item-sidebar" *ngIf="show_sidebar_left">
-    <app-sidebar-left></app-sidebar-left>
-  </div>
-  <div class="item-spacing" *ngIf="show_item_spacing"></div>
-  <div class="item">
-    <router-outlet></router-outlet>
-  </div>
-  <div class="item-spacing" *ngIf="show_item_spacing"></div>
-  <div class="item-sidebar sidenav" *ngIf="show_sidebar_right">
-    <app-sidebar-right></app-sidebar-right>
-  </div>
-</div>
-<app-footer></app-footer>
+  <ons-page modifier="full_bg">
+    <div class="background"></div>
+    <!-- User not logged in -->
+    <div *ngIf="!loggedIn">
+      <ons-toolbar class="toolbar">
+          <div class="left toolbar__left toolbar-text"></div>
+          <div class="center toolbar__center toolbar-text"><strong>S.Party</strong></div>
+          <div class="right toolbar__right toolbar-text"></div>
+      </ons-toolbar>
+      <div class="content">           <!-- Content of the page -->
+          <br/><br/><br/><br/>
+          <div class="center">
+              <ons-button class="login-button"><a style="color: white" href="{{ spotifyLoginUrl }}"><strong>Login with Spotify</strong></a></ons-button>
+          </div>
+      </div>
+    </div> <!-- / User not logged in -->
+
+    <!-- User logged in but not joined -->
+    <div *ngIf="loggedIn && !joined">
+      <ons-toolbar modifier="material">
+          <div class="center" style="color: white"><strong>Home</strong></div>
+      </ons-toolbar>
+      <div class="content" style="color:white;">
+        <div class="center">
+            <ons-row>&nbsp;</ons-row>
+            <ons-row>&nbsp;</ons-row>
+            <ons-row>&nbsp;</ons-row>
+            <ons-row>&nbsp;</ons-row>
+            <ons-row>&nbsp;</ons-row>
+            <ons-row>&nbsp;</ons-row>
+            <ons-row>
+              <ons-col></ons-col>
+              <ons-col></ons-col>
+              <ons-col width="75%" height="200px">
+                  <ons-input [(value)]="roomName" type="text" placeholder="Room name..." modifier="underbar"></ons-input>
+              </ons-col>
+              <ons-col></ons-col>
+              <ons-col></ons-col>
+              <ons-col></ons-col>
+            </ons-row>
+            <ons-row>&nbsp;</ons-row>
+            <ons-row>&nbsp;</ons-row>
+            <ons-row align="center">
+              <ons-col></ons-col>
+              <ons-col>
+                <ons-button (click)="join()" class="login-button"><strong>Join</strong></ons-button>
+              </ons-col>
+              <ons-col>
+                <ons-button (click)="host()" class="host-button"><strong>Host</strong></ons-button>
+              </ons-col>
+              <ons-col></ons-col>
+            </ons-row>
+        </div>
+      </div>
+    </div>
+    <!-- / User logged in but not joined -->
+    
+    <!-- User logged in and joined -->
+    <span *ngIf="loggedIn && joined">
+      <tabbar></tabbar>
+    </span>
+    <!-- / User logged in and joined -->
+  </ons-page>
+

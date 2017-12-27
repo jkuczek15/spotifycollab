@@ -1,0 +1,25 @@
+<ons-toolbar class="toolbar toolbar-background">
+    <div class="center toolbar__center toolbar-text">
+        <ons-input type="search" class="search-input" input-id="search-input" 
+        placeholder="Search Music..." [(value)]="searchString" (valueChange)="searchMusic()" (focus)="searchFocus()"></ons-input>
+    </div>
+</ons-toolbar>
+<div class="background"></div>
+<div class="content" style="color: white">           <!-- Content of the page -->
+    <ons-list modifier="material" >
+        <ons-list-item modifier="material, tappable" *ngFor="let track of searchItems">
+            <div class="left">
+                <table>
+                    <tr>
+                        <td>{{ track.name }}</td>
+                    </tr>
+                    <tr>
+                        <span *ngFor="let artist of track.artists; let isLast=last">
+                            <small>{{ artist.name }}</small>{{isLast ? '' : ', '}}
+                        </span>
+                    </tr>
+                </table>
+            </div>
+        </ons-list-item>
+    </ons-list>
+</div>

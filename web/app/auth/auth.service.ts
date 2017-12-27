@@ -14,6 +14,7 @@ export class AuthService {
   public window;
   public storedURL;
   public debugLogout: boolean = false;
+  public hideTabs: boolean = false;
   private environment = new Environment();
 
   // make a socket.io connection to the server

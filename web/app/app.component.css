@@ -37,3 +37,32 @@
 .item-spacing {
   padding-right: 30px;
 }
+
+.toolbar {
+  background-color: #006699;
+}
+
+.toolbar-text {
+  color: white;
+}
+
+.center {
+  margin: auto;
+  width: 50%;
+}
+
+.background {
+  background-color: #1a1a1a;
+}
+
+.login-button {
+  background-color: #23CF5F
+}
+
+.host-button {
+  background-color: #23CF5F
+}
+
+ons-input {
+  width:100% !important;
+}

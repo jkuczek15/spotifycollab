@@ -11,11 +11,12 @@ import * as RoomVM from '../../includes/viewModels/Room';
 import * as io from "socket.io-client";
 import * as ons from 'onsenui';
 import { Environment }from '../../../environments/environment';
+import { QueueComponent } from '../queue/queue.component';
 // required to use jQuery
 declare var $: any;
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'ons-page[dashboard]',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -47,7 +48,10 @@ export class DashboardComponent implements OnInit {
   
   // use the socket connection provided by the authentication service
   private socket = this.authentication.socket;
+
   
+
+
   ngOnInit() {
     // variable initialization
     var playbackRefreshInterval = 1000;
@@ -61,12 +65,12 @@ export class DashboardComponent implements OnInit {
 
     // require that the user be logged in to access the dashboard
     if(!this.authentication.requireLogin()) return false;
-
+    
     // check if we have room information stored in the session,
     // if we do, we should use this before displaying the 'join' form
     var room = this.authentication.getRoom();
     
-    if(room != null){
+    if(room != null) {
       // subscribe the user to the room since refreshing the page
       // causes the user to get a new socket connection
       this.socket.emit('subscribe', { roomName: room.name });
@@ -159,58 +163,9 @@ export class DashboardComponent implements OnInit {
     // set the isHost variable so that we can display different items
     // based on the host condition
     this.isHost = this.authentication.isHost();
-    this.getLibrary();
   }// end ngOnInit function
 
-  getLibrary() {
-    // Grab our playlist data using the service
-    this.dashboardService.getLibrary().then((data: any) => {
-      this.library = data.items;
-    }, (err) => {
-      if(err.status !== 401){
-        console.log(err);
-      }// end if not unauthorized error
-    });
-  }// end function getLibrary
 
-  joinRoom(){
-    if(this.roomName.search(/^$|\s+/) == 0){
-      // the room name is empty
-      this.error = "Please enter a room name.";
-    }else{
-      // the room name is not empty
-      this.socket.emit('join-room', { user: this.user, roomName: this.roomName });
-    }// end if the room name is empty
-  }// end function joinRoom
-
-  doSomething() {
-    ons.notification.alert("Hello");
-  }
-
-  hostRoom(){
-    if(this.roomName.search(/^$|\s+/) == 0){
-      // the room name is empty
-      this.error = "Please enter a room name.";
-    }else{
-      // the room name is not empty, create the playlist
-      // and initialize the room with an empty queue
-      var data = {
-        description: "Boom room playlist",
-        public: false,
-        name: "Boom Room - " + this.roomName
-      };
-      this.dashboardService.createPlaylist(this.user.id, data).then((data: any) => {
-        // successfully created a new Spotify playlist
-        // show the user the dashboard with their new playlist
-        this.socket.emit('create-room', { user: this.user, roomName: this.roomName, playlistUri: data.href, playlistId: data.id, contextUri: data.uri });
-        this.isHost = this.authentication.setHost(true);
-      }, (err) => {
-        if(err.status !== 401){
-          console.log(err);
-        }// end if not unauthorized error
-      });
-    }// end if the room name is empty
-  }// end function createPlaylist
 
   leaveRoom(){
     this.socket.emit('leave-room', { user: this.user, room: this.room });
@@ -365,5 +320,18 @@ export class DashboardComponent implements OnInit {
       return item.track.id === id
     });
   }// end function findTrackById
+
+  deparam(querystring) {
+    // remove any preceding url and split
+    querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
+    var params = {}, pair, d = decodeURIComponent, i;
+    // march and parse
+    for (i = querystring.length; i > 0;) {
+      pair = querystring[--i].split('=');
+      params[d(pair[0])] = d(pair[1]);
+    }
+  
+    return params;
+  }// end function deparam
 
 }// end class DashboardComponent

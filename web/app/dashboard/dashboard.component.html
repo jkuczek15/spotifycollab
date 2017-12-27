@@ -1,4 +1,17 @@
-<div class="row">
+<ons-toolbar class="toolbar toolbar-background">
+    <div class="left toolbar__left toolbar-text"></div>
+    <div class="center toolbar__center toolbar-text"><strong>Home</strong></div>
+    <div class="right toolbar__right toolbar-text"></div>
+</ons-toolbar>
+<div class="background"></div>
+<div class="content" style="color: white">           <!-- Content of the page -->
+    Room: {{ room.name }}
+</div>
+    
+    
+
+
+<!-- <div class="row">
     <div class="col-xs-8">
         <h1>
             <span [hidden]="joined">Dashboard</span>
@@ -63,7 +76,7 @@
                     </li>
                 </ul>
             </div>-->
-            <div class="col-sm-6">
+            <!-- <div class="col-sm-6">
                 <h4>Queue:</h4>
                 <div class="pre-scrollable " style="max-height: 70vh">
                     <table class="table">
@@ -116,5 +129,5 @@
         </div>
     </div>
     <ons-button (click)="doSomething()" modifier="material">Click Me</ons-button>
-</div>
+</div> -->
 

@@ -1,4 +1,5 @@
 // Required Modules
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -20,6 +21,9 @@ import { AuthService } from './auth/auth.service';
 import { HttpClient } from '../includes/http-client.service'
 import { WindowService } from '../includes/window.service'
 import { DashboardService } from './dashboard/dashboard.service';
+import { LibraryService } from './library/library.service';
+import { SearchService } from './search/search.service';
+import { FormService } from './form.service';
 
 // Application Components
 import { AppComponent } from './app.component';
@@ -27,10 +31,13 @@ import { NavbarComponent } from './common/navbar/navbar.component';
 import { FooterComponent } from './common/footer/footer.component';
 import { SidebarLeftComponent } from './common/sidebar-left/sidebar-left.component';
 import { SidebarRightComponent } from './common/sidebar-right/sidebar-right.component';
+import { TabbarComponent } from './tabbar/tabbar.component';
 
 // Router Components
-import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { QueueComponent } from './queue/queue.component';
+import { LibraryComponent } from './library/library.component';
+import { SearchComponent } from './search/search.component';
 
 // Pipes
 import { DerpPipe } from '../includes/derp.pipe';
@@ -40,11 +47,7 @@ import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahe
 const appRoutes: Routes = [
   {
     path: '',
-    component: HomeComponent
-  },
-  {
-     path: 'dashboard',
-     component: DashboardComponent
+    component: AppComponent
   }
 ];
 
@@ -54,32 +57,16 @@ appRoutes.push({
   redirectTo: '/'
 });
 
-// Mobile responsive breakpoint configuration
-let config = {
-  breakPoints: {
-      xs: {max: 600},
-      sm: {min: 601, max: 959},
-      md: {min: 960, max: 1279},
-      lg: {min: 1280, max: 1919},
-      xl: {min: 1920}
-  },
-  debounceTime: 100 // allow to debounce checking timer
-};
-
-export function ResponsiveDefinition(){ 
-  return new ResponsiveConfig(config);
-};
-
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent,
-    FooterComponent,
-    SidebarLeftComponent,
-    SidebarRightComponent,
-    HomeComponent,
+    TabbarComponent,
     DashboardComponent,
-    DerpPipe
+    QueueComponent,
+    TabbarComponent,
+    SearchComponent,
+    LibraryComponent,
+    DerpPipe,
   ],
   imports: [
     BrowserModule,
@@ -100,12 +87,11 @@ export function ResponsiveDefinition(){
   providers: [
     AuthService,
     DashboardService,
+    FormService,
     HttpClient,
-    WindowService,
-    {
-      provide: ResponsiveConfig, 
-      useFactory: ResponsiveDefinition 
-    }
+    LibraryService,
+    SearchService,
+    WindowService
   ],
   bootstrap: [AppComponent],
   exports: [
@@ -114,5 +100,14 @@ export function ResponsiveDefinition(){
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
   ],
+  entryComponents: [
+    DashboardComponent,
+    QueueComponent,
+    LibraryComponent,
+    SearchComponent
+  ]
 })
 export class AppModule { }
+
+platformBrowserDynamic().bootstrapModule(AppModule)
+.catch(err => console.error(err));

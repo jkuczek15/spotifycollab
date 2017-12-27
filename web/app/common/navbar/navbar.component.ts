@@ -51,7 +51,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.searchMusic = (text$: Observable<string>) => text$
       .debounceTime(200)
       .distinctUntilChanged()
-      .switchMap(term => this.dashboardService.searchMusic(term)     
+      .switchMap(term => this.dashboardService.getPlaylist(term)     
     );
 
     // Initialize an input formatter for the autocomplete box

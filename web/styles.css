@@ -45,6 +45,10 @@ thead th {
     color: white;
 }
 
+.background {
+  background-color: #1a1a1a;
+}
+
 .panel-table .panel-body {
   padding:0;
 }
