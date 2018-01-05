@@ -6,7 +6,7 @@ export class QueueService {
 
   constructor(private http: HttpClient) { }
 
-  getPlaylist(playlistUri){
+  getPlaylist(playlistUri) {
     return new Promise((resolve, reject) => {
       this.http.get(playlistUri)
         .map(res => res.json())

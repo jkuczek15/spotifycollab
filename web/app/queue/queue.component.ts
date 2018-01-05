@@ -21,7 +21,6 @@ export class QueueComponent implements OnInit, OnDestroy {
     this.room = this.authentication.getRoom();
     // create a handler for when the playlist is updated or changed
     this.socket.on('playlist-update', (data) => {
-      console.log('testing');
       this.getPlaylist();
     });
     this.getPlaylist();
@@ -39,7 +38,7 @@ export class QueueComponent implements OnInit, OnDestroy {
   }// end function getPlaylist
 
   ngOnDestroy(){
-    //this.socket.removeListener('playlist-update');
+    this.socket.removeListener('playlist-update');
   }// end ngOnDestroy function
 
 }// end class QueueComponent

@@ -23,7 +23,6 @@ export class LibraryComponent implements OnInit {
     // Grab our playlist data using the service
     this.libraryService.getLibrary().then((data: any) => {
       this.library = data.items;
-      console.log(this.library);
     }, (err) => {
       if(err.status !== 401){
         console.log(err);

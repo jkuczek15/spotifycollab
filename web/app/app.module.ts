@@ -24,17 +24,13 @@ import { DashboardService } from './dashboard/dashboard.service';
 import { LibraryService } from './library/library.service';
 import { SearchService } from './search/search.service';
 import { QueueService } from './queue/queue.service';
-import { FormService } from './form.service';
+import { FormService } from '../includes/form.service';
 
 // Application Components
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './common/navbar/navbar.component';
-import { FooterComponent } from './common/footer/footer.component';
-import { SidebarLeftComponent } from './common/sidebar-left/sidebar-left.component';
-import { SidebarRightComponent } from './common/sidebar-right/sidebar-right.component';
 import { TabbarComponent } from './tabbar/tabbar.component';
 
-// Router Components
+// Router Tab Components
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { QueueComponent } from './queue/queue.component';
 import { LibraryComponent } from './library/library.component';

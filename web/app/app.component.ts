@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouteHelper } from '../includes/utils/route-helper.module';
 import { AuthService } from './auth/auth.service';
-import { FormService } from './form.service';
+import { FormService } from '../includes/form.service';
 import { Environment }from '../../environments/environment';
 import * as ons from 'onsenui';
 var querystring = require('querystring');
