@@ -3,7 +3,7 @@
 
 export class Environment {
   production = false;
-  host = '10.0.0.18';
+  host = '192.168.1.20';
   ws_port = '3000';
   socket_port = '4000';
   api_port = '10010';
