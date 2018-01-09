@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, Button, View } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { StatusBar } from 'react-native';
-import { Navigation } from 'components/Navigation';
+import { TabScreen } from './components/TabScreen';
 
 class ChatScreen extends React.Component {
   // Nav options can be defined as a function of the screen's props:
@@ -13,17 +13,17 @@ class ChatScreen extends React.Component {
       // The screen's current route is passed in to `props.navigation.state`:
       const { params } = this.props.navigation.state;
       return (
-      <View>
-          <StatusBar hidden={true} />
-          <Text>Chat with {params.user}</Text>
-      </View>
+        <View>
+            <StatusBar hidden={true} />
+            <Text>Chat with {params.user}</Text>
+        </View>
       );
   }// end render function
 }// end class ChatScreen
 
 const SpotifyCollab = StackNavigator({
   Home: { 
-    screen: Navigation,
+    screen: TabScreen,
   },
   Chat: { screen: ChatScreen },
 });
