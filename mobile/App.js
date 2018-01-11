@@ -1,44 +1,33 @@
-import React from 'react';
-import { StyleSheet, Text, Button, View } from 'react-native';
-import { StackNavigator } from 'react-navigation';
-import { StatusBar } from 'react-native';
-import { TabScreen } from './components/TabScreen';
-
-class ChatScreen extends React.Component {
-  // Nav options can be defined as a function of the screen's props:
-  static navigationOptions = ({ navigation }) => ({
-      title: `Chat with ${navigation.state.params.user}`,
-  });
-  render() {
-      // The screen's current route is passed in to `props.navigation.state`:
-      const { params } = this.props.navigation.state;
-      return (
-        <View>
-            <StatusBar hidden={true} />
-            <Text>Chat with {params.user}</Text>
-        </View>
-      );
-  }// end render function
-}// end class ChatScreen
-
-const SpotifyCollab = StackNavigator({
-  Home: { 
-    screen: TabScreen,
-  },
-  Chat: { screen: ChatScreen },
-});
+import React from "react";
+import { createRootNavigator } from "./includes/Router";
+import { isSignedIn } from "./includes/Auth";
 
 export default class App extends React.Component {
+  
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      signedIn: false,
+      checkedSignIn: false
+    };
+  }// end constructor App
+
+  componentWillMount() {
+    isSignedIn()
+      .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
+      .catch(err => alert("An error occurred"));
+  }// end componentWillMount function
+
   render() {
-    return <SpotifyCollab />;
+    const { checkedSignIn, signedIn } = this.state;
+
+    // If we haven't checked AsyncStorage yet, don't render anything (better ways to do this)
+    if (!checkedSignIn) {
+      return null;
+    }
+
+    const Layout = createRootNavigator(signedIn);
+    return <Layout />;
   }// end render function
 }// end class App
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-});
