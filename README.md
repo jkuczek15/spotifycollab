@@ -4,7 +4,7 @@ Node.js, Express, Angular 5, Swagger, Socket.io
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.2.0.
 
-# Installing Software
+# Installing Software (Web)
 
 1. Install Node.js and npm from [here](https://nodejs.org/en/download/). Ensure you can run `node` and `npm` from a terminal.
 2. Run `npm install` inside the project directory, `spotifycollab`, to install missing dependencies.
@@ -17,13 +17,25 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
     `npm install -g angular-cli`
 
-5. Install [MongoDB](https://www.mongodb.com/download-center#community) for a database server. It is recommended that you add the MongoDB `bin` folder to your PATH environment variable. 
+5. Install [MongoDB](https://www.mongodb.com/download-center#community) for a database server. It is recommended that you add the MongoDB `bin` folder to your PATH environment variable.
 
-# Run the project
+# Installing Software (iOS + Android) 
+
+1. Install Node.js and npm as stated in step 1 above.
+2. Install React Native CLI using `npm install -g create-react-native-app`
+3. Install Expo CLI using `npm install -g exp`
+4. Install all project dependencies by navigating to `mobile/` and running `npm install`
+
+# Run the project (Web)
 1. Navigate to the folder titled 'rest-api' and run the command `swagger project start`, this starts the rest-api which we will interact with both from the client and the server. 
 2. Run a mongodb database server. On Linux, open a new terminal and type `mongod`. On Windows, the executable file is something similar to the following path:  `./Program Files/MongoDB/Server/{version}/bin/mongod`
 3. Navigate to the project directory and run `ng build --watch`. This builds the project and also watches the client side for changes.
 4. Navigate to the project directory and run `nodemon`, this starts the web server along with socket.io on two separate ports. This also watches the server for changes.
+
+# Run the project (Mobile)
+1. Navigate to the folder `mobile/` and run the command `exp start`.
+2. Install the Expo application on your phone using either Google Play Store or App Store
+3. Scan the displayed QR code using the Expo app.
 
 ## Rest API
 
