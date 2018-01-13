@@ -1,6 +1,7 @@
 import React from "react";
 import { ScrollView, Text, Linking, View } from "react-native";
 import { Card, Button } from "react-native-elements";
+import { getAccessToken } from '../includes/Auth';
 
 const images = [
   {
@@ -29,21 +30,37 @@ const images = [
   }
 ];
 
-export default () => (
-  <View style={{ flex: 1 }}>
-    <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
-      {images.map(({ name, image, url, key }) => (
-        <Card title={`CARD ${key}`} image={image} key={key}>
-          <Text style={{ marginBottom: 10 }}>
-            Photo by {name}.
-          </Text>
-          <Button
-            backgroundColor="#03A9F4"
-            title="VIEW NOW"
-            onPress={() => Linking.openURL(url)}
-          />
-        </Card>
-      ))}
-    </ScrollView>
-  </View>
-);
+export default class Home extends React.Component {
+  
+  constructor(props) {
+    super(props);
+  }// end constructor App
+
+  componentWillMount() {
+    getAccessToken().then(token => {
+      console.log(token);
+    });
+  }// end componentWillMount function
+
+  render(){
+    return (
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+          {images.map(({ name, image, url, key }) => (
+            <Card title={`CARD ${key}`} image={image} key={key}>
+              <Text style={{ marginBottom: 10 }}>
+                Photo by {name}.
+              </Text>
+              <Button
+                backgroundColor="#03A9F4"
+                title="VIEW NOW"
+                onPress={() => Linking.openURL(url)}
+              />
+            </Card>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  }// end render function
+
+}// end class Home

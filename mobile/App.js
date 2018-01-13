@@ -1,6 +1,6 @@
 import React from "react";
 import { createRootNavigator } from "./includes/Router";
-import { isSignedIn } from "./includes/Auth";
+import { isSignedIn, saveUser } from "./includes/Auth";
 
 export default class App extends React.Component {
   
@@ -19,6 +19,11 @@ export default class App extends React.Component {
       .catch(err => alert("An error occurred"));
   }// end componentWillMount function
 
+  signIn(user) {
+    saveUser(user);
+    this.setState({ signedIn: true, checkedSignIn: true });
+  }// end function signIn
+
   render() {
     const { checkedSignIn, signedIn } = this.state;
 
@@ -28,6 +33,6 @@ export default class App extends React.Component {
     }
 
     const Layout = createRootNavigator(signedIn);
-    return <Layout />;
+    return <Layout signIn={this.signIn.bind(this)}/>;
   }// end render function
 }// end class App
