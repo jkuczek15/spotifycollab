@@ -7,6 +7,7 @@ export default class Home extends React.Component {
   
   constructor(props) {
     super(props);
+    access_token = props.screenProps.get('access_token');
   }// end constructor App
 
   render() {
