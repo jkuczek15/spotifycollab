@@ -1,5 +1,16 @@
 {
   "expo": {
-    "sdkVersion": "23.0.0"
+    "name": "Sparty",
+    "icon": "./images/icon.png",
+    "version": "1.0.0",
+    "slug": "sparty",
+    "sdkVersion": "23.0.0",
+    "scheme": "sparty",
+    "ios": {
+      "bundleIdentifier": "com.spotifycollab.sparty"
+    },
+    "android": {
+      "package": "com.spotifycollab.sparty"
+    }
   }
 }

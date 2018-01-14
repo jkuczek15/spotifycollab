@@ -48,7 +48,6 @@ export const isSignedIn = () => {
     AsyncStorage.getItem(USER_TOKEN)
       .then(res => {
         if (res !== null) {
-          console.log(res);
           resolve(true);
         } else {
           resolve(false);
