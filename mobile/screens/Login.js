@@ -7,7 +7,7 @@ import { environment } from '../environments/environment';
 import { Buffer } from 'buffer'
 var querystring = require('querystring');
 
-export default class Signup extends React.Component {
+export default class Login extends React.Component {
 
   constructor(props) {
     super(props);
@@ -23,7 +23,8 @@ export default class Signup extends React.Component {
     // using the authorization code given to us after the user logs in successfully
     let redirect_uri = AuthSession.getRedirectUrl();
 
-    return fetch('https://accounts.spotify.com/api/token?'+querystring.stringify({
+    return fetch('https://accounts.spotify.com/api/token?'+
+        querystring.stringify({
           code: code,
           redirect_uri: redirect_uri,
           grant_type: 'authorization_code'

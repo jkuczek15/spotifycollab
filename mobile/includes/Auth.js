@@ -1,5 +1,6 @@
 import { AsyncStorage } from "react-native";
 
+// authentication session store keys
 export const USER_REFRESH_TOKEN = "refresh_token";
 export const USER_TOKEN = "access_token";
 
