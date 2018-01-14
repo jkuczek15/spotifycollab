@@ -4,7 +4,7 @@ import { Card, Button } from "react-native-elements";
 import { saveAccessToken, saveRefreshToken } from '../includes/Auth';
 import { AuthSession } from 'expo';
 import { environment } from '../environments/environment';
-import { Buffer } from 'buffer'
+import { Buffer } from 'buffer';
 var querystring = require('querystring');
 
 export default class Login extends React.Component {
@@ -64,8 +64,10 @@ export default class Login extends React.Component {
         // save the relevant user tokens using async storage
         saveAccessToken(data.access_token);
         saveRefreshToken(data.refresh_token);
-        // navigate to the tab navigator after they sign in
-        this.props.navigation.navigate("SignedIn");
+
+        this.props.screenProps.set('access_token', data.access_token, () => {
+          this.props.navigation.navigate("SignedIn");
+        });
       });
     }// end if we have a valid Spotify auth code
 
@@ -73,7 +75,7 @@ export default class Login extends React.Component {
 
   render() {
     return (
-      <View style={{ paddingVertical: 20 }}>
+      <View style={{ paddingVertical: 25 }}>
         <Card>
           <Button
             backgroundColor="#23CF5F"
@@ -84,4 +86,4 @@ export default class Login extends React.Component {
       </View>
     );
   }// end render function
-}// end class Signup
+}// end class Login

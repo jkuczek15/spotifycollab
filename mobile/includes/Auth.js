@@ -42,7 +42,10 @@ export const getRefreshToken = async () => {
   }
 };
 
-export const onSignOut = () => AsyncStorage.removeItem(USER_TOKEN);
+export const onSignOut = async () => {
+  await AsyncStorage.removeItem(USER_TOKEN);
+  await AsyncStorage.removeItem(USER_REFRESH_TOKEN);
+};
 
 export const isSignedIn = () => {
   return new Promise((resolve, reject) => {
