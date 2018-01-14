@@ -15,4 +15,4 @@ export default class Music extends React.Component {
       </View>
     );
   }// end render function
-}// end class Search
+}// end class Music
