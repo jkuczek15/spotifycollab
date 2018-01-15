@@ -1,6 +1,7 @@
 import React from "react";
 import { createRootNavigator } from "./includes/Router";
 import { isSignedIn, saveUser, getAccessToken } from "./includes/Auth";
+import { userInfo } from './includes/Spotify';
 
 export default class App extends React.Component {
   
@@ -16,8 +17,14 @@ export default class App extends React.Component {
 
   componentWillMount() {
     getAccessToken().then(token => {
-      this.setState({ signedIn: (token != null), checkedSignIn: true, access_token: token });
-    }).catch(err => alert("An error occurred"));
+      if(token){
+        userInfo(token).then((user) => {
+          this.setState({ signedIn: true, checkedSignIn: true, token: token, user: user });
+        });
+      }else{
+        this.setState({ signedIn: false, checkedSignIn: true, token: null, user: null });
+      }// end if we have a Spotify access token
+    }).catch(err => console.log(err));
   }// end componentWillMount function
 
   render() {

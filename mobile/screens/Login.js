@@ -2,6 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Card, Button } from "react-native-elements";
 import { saveAccessToken, saveRefreshToken } from '../includes/Auth';
+import { userInfo } from '../includes/Spotify';
 import { AuthSession } from 'expo';
 import { environment } from '../environments/environment';
 import { Buffer } from 'buffer';
@@ -65,8 +66,15 @@ export default class Login extends React.Component {
         saveAccessToken(data.access_token);
         saveRefreshToken(data.refresh_token);
 
-        this.props.screenProps.set('access_token', data.access_token, () => {
-          this.props.navigation.navigate("SignedIn");
+        // get the user's spotify information using the access token and store
+        // it in the screen props for further usage in child components
+        userInfo(data.access_token).then((user) => {
+          this.props.screenProps.set('token', data.access_token, () => {
+            this.props.screenProps.set('user', user, () => {
+              this.props.navigation.navigate("SignedIn");
+              this.setState({ signedIn: true, checkedSignIn: true, token: data.access_token, user: user });
+            });
+          });
         });
       });
     }// end if we have a valid Spotify auth code

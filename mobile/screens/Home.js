@@ -16,7 +16,7 @@ export default class Home extends React.Component {
       <View style={{ paddingVertical: 25 }}>
         <Text>This is the home screen.</Text>
         <Button
-            backgroundColor="#03A9F4"
+            backgroundColor="#23CF5F"
             title="SIGN OUT"
             onPress={() => onSignOut().then(() => navigation.navigate("SignedOut"))}
         />

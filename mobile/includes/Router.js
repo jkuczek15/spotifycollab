@@ -63,7 +63,10 @@ export const SignedIn = TabNavigator (
     tabBarPosition: 'bottom',
     tabBarOptions: {
       showIcon: true,
-      showLabel: false
+      showLabel: false,
+      style:{
+        backgroundColor: "#23CF5F"
+      }
     }
   }
 );
