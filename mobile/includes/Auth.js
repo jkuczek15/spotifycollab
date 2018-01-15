@@ -1,4 +1,7 @@
 import { AsyncStorage } from "react-native";
+import { environment } from '../environments/environment';
+import { Buffer } from 'buffer';
+var querystring = require('querystring');
 
 // authentication session store keys
 export const USER_REFRESH_TOKEN = "refresh_token";
@@ -45,6 +48,24 @@ export const getRefreshToken = async () => {
 export const onSignOut = async () => {
   await AsyncStorage.removeItem(USER_TOKEN);
   await AsyncStorage.removeItem(USER_REFRESH_TOKEN);
+};
+
+export const refreshToken = async (refresh_token) => {
+return fetch('https://accounts.spotify.com/api/token?' + 
+      querystring.stringify({
+        refresh_token: refresh_token,
+        grant_type: 'refresh_token'
+      }),{
+      method: "POST",
+      headers: {
+        'Content-Type' : 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + (new Buffer(environment.client_id + ':' + environment.client_secret).toString('base64'))
+      }
+  }).then(function(response) {
+      return response.json();
+  }, function(error) {
+      console.log(error);
+  });
 };
 
 export const isSignedIn = () => {

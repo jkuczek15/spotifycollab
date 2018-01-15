@@ -5,6 +5,7 @@ import { saveAccessToken, saveRefreshToken } from '../includes/Auth';
 import { userInfo } from '../includes/Spotify';
 import { AuthSession } from 'expo';
 import { environment } from '../environments/environment';
+import { initSocket } from '../includes/Socket';
 import { Buffer } from 'buffer';
 var querystring = require('querystring');
 
@@ -71,14 +72,17 @@ export default class Login extends React.Component {
         userInfo(data.access_token).then((user) => {
           this.props.screenProps.set('token', data.access_token, () => {
             this.props.screenProps.set('user', user, () => {
-              this.props.navigation.navigate("SignedIn");
-              this.setState({ signedIn: true, checkedSignIn: true, token: data.access_token, user: user });
+              // initialize a new web socket connection after successful login
+              let socket = initSocket();
+              this.props.screenProps.set('socket', socket, () => {
+                this.props.navigation.navigate("SignedIn");
+                this.setState({ signedIn: true, checkedSignIn: true, token: data.access_token, user: user, socket: socket });
+              });
             });
           });
         });
       });
     }// end if we have a valid Spotify auth code
-
   }// end login function
 
   render() {

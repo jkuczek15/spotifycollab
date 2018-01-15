@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
+import { Header } from 'react-native-elements';
 
 export default class Search extends React.Component {
 
@@ -10,8 +11,14 @@ export default class Search extends React.Component {
 
   render() {
     return (
-      <View style={{ paddingVertical: 25 }}>
-        <Text>This is the search screen.</Text>
+      <View>
+        <Header
+          centerComponent={{ text: "Search", style: { color: '#fff' } }}
+          backgroundColor="#23CF5F"
+        />
+        <View style={{ paddingVertical: 25 }}>
+          <Text>This is the search screen.</Text>
+        </View>
       </View>
     );
   }// end render function
