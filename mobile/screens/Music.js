@@ -11,6 +11,7 @@ export default class Music extends React.Component {
     
     this.state = {
       tracks: [],
+      offset: 0,
       loading: false
     };
     
@@ -20,22 +21,16 @@ export default class Music extends React.Component {
 
   componentDidMount(){
     this.setState({ loading: true });
-    getLibrary(this.token).then((res) => {
-      this.setState({tracks: res.items, next: res.next, loading: false});
+    this.getNextTracks();
+
+    getLibrary(this.token, this.state.offset).then((res) => {
+      let tracks = this.state.tracks;
+      this.setState({tracks: [...tracks, ...res.items], loading: false});
     });
   }// end function componentDidMount
 
   getNextTracks() {
-    // recursivley get all the tracks from a user's library
-    let next = this.state.next;
-    if(next){
-      this.setState({ loading: true });
-      getLibraryNext(next, this.token).then((res) => {
-        let tracks = this.state.tracks;
-        this.setState({tracks: [...tracks, ...res.items], next: res.next, loading: false});
-      });
-    }// end if we have more tracks to retreieve
-    
+    this.setState({ offset: this.state.offset+50 });
   }// end function getNextTracks
 
   render() {

@@ -26,8 +26,8 @@ return fetch('https://api.spotify.com/v1/users/'+user_id+'/playlists/'+playlist_
     });
 };
 
-export const getLibrary = async (token) => {
-return fetch('https://api.spotify.com/v1/me/tracks?limit=50', {
+export const getLibrary = async (token, offset) => {
+return fetch('https://api.spotify.com/v1/me/tracks?limit=50&offset='+offset, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
