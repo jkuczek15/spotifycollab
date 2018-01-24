@@ -2,35 +2,48 @@ import React from "react";
 import { View, ScrollView, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import { Header } from 'react-native-elements';
 import { getLibrary, getLibraryNext } from '../includes/Spotify';
-import { List, ListItem } from 'react-native-elements';
+import { List } from 'react-native-elements';
+import FlatListItem from '../includes/components/FlatListItem';
 
 export default class Music extends React.Component {
 
   constructor(props) {
     super(props);
-    
     this.state = {
       tracks: [],
       offset: 0,
       loading: false
     };
-    
+    this.getTracks = this.getTracks.bind(this);
     this.getNextTracks = this.getNextTracks.bind(this);
     this.token = props.screenProps.get('token');
   }// end constructor App
 
-  componentDidMount(){
-    this.setState({ loading: true });
-    this.getNextTracks();
-
-    getLibrary(this.token, this.state.offset).then((res) => {
-      let tracks = this.state.tracks;
-      this.setState({tracks: [...tracks, ...res.items], loading: false});
-    });
+  componentDidMount() {
+    this.getTracks();
   }// end function componentDidMount
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.offset === this.state.offset;
+  }// end function shouldComponentUpdate
+
+  addTrack(track) {
+    console.log(track);
+  }// end function addTrack
+
+  getTracks() {
+    this.setState({ loading: true });
+    getLibrary(this.token, this.state.offset).then((res) => {
+      this.setState({tracks: [...this.state.tracks, ...res.items], loading: false});
+    });
+  }// end function getTracks
+
   getNextTracks() {
-    this.setState({ offset: this.state.offset+50 });
+    this.setState({ 
+      offset: this.state.offset + 50 
+    }, () => {
+      this.getTracks();
+    });
   }// end function getNextTracks
 
   render() {
@@ -45,17 +58,16 @@ export default class Music extends React.Component {
         <View>
           <FlatList
             style={{marginBottom: 140}}
-            extraData={this.state}
             data={this.state.tracks}
             keyExtractor={item => item.track.id}
             ListFooterComponent={this.renderFooter}
-            renderItem={({item}) => 
-            <ListItem 
-              title={item.track.name} 
-              subtitle={item.track.artists.map((artist) => artist.name).join(', ')} 
-            />}
+            renderItem={({item}) =>
+            <FlatListItem title={item.track.name} 
+                          subtitle={item.track.artists.map((artist) => artist.name).join(', ')}
+                          onPress={() => {this.addTrack(item.track)} } />}
             onEndReached={this.getNextTracks}
-            onEndReachedThreshold={0.5}
+            onEndReachedThreshold={1}
+            removeClippedSubviews={true}
           />
         </View>
       </View>
