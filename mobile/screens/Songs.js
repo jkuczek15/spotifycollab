@@ -5,7 +5,7 @@ import { getLibrary, getLibraryNext } from '../includes/Spotify';
 import { List } from 'react-native-elements';
 import FlatListItem from '../includes/components/FlatListItem';
 
-export default class Music extends React.Component {
+export default class Songs extends React.Component {
 
   constructor(props) {
     super(props);
@@ -50,14 +50,9 @@ export default class Music extends React.Component {
     if(!this.state.tracks) return null;
     
     return (
-      <View>
-        <Header
-          centerComponent={{ text: "Your Music", style: { color: '#fff' } }}
-          backgroundColor="#23CF5F"
-        />
         <View>
           <FlatList
-            style={{marginBottom: 140}}
+            style={{marginBottom: 0}}
             data={this.state.tracks}
             keyExtractor={item => item.track.id}
             ListFooterComponent={this.renderFooter}
@@ -66,11 +61,10 @@ export default class Music extends React.Component {
                           subtitle={item.track.artists.map((artist) => artist.name).join(', ')}
                           onPress={() => {this.addTrack(item.track)} } />}
             onEndReached={this.getNextTracks}
-            onEndReachedThreshold={1}
+            onEndReachedThreshold={0.6}
             removeClippedSubviews={true}
           />
         </View>
-      </View>
     );
   }// end render function
 

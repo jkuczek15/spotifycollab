@@ -1,17 +1,27 @@
 import React from "react";
-import { Platform, StatusBar } from "react-native";
+import { View, Platform, StatusBar } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 import { FontAwesome } from '@expo/vector-icons';
+import { Header } from 'react-native-elements';
 
 // navigation screens
 import Login from "../screens/Login";
 import Home from "../screens/Home";
 import Room from "../screens/Room";
 import Search from "../screens/Search";
-import Music from "../screens/Music";
+import Songs from "../screens/Songs";
+import Playlists from '../screens/Playlists';
+import MusicHome from '../screens/MusicHome';
 
 const headerStyle = {
-  marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+  marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  backgroundColor: "#23CF5F"
+};
+
+const headerTitleStyle = {
+  fontSize: 17,
+  textAlign: 'center',
+  alignSelf: 'center'
 };
 
 export const SignedOut = StackNavigator({
@@ -20,6 +30,38 @@ export const SignedOut = StackNavigator({
     navigationOptions: {
       title: "Login",
       headerStyle
+    }
+  }
+});
+
+export const MusicNavigator = StackNavigator({
+  Home: {
+    screen: MusicHome,
+    navigationOptions: {
+      headerTitle: "Music",
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF"    
+   }
+  },
+  Playlists: {
+    screen: Playlists,
+    navigationOptions: {
+      headerTitle: "Playlists",
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF",  
+      headerRight: (<View></View>)
+    }
+  },
+  Songs: {
+    screen: Songs,
+    navigationOptions: {
+      headerTitle: "Songs",
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF",    
+      headerRight: (<View></View>)
     }
   }
 });
@@ -51,7 +93,7 @@ export const SignedIn = TabNavigator (
       }
     },
     Music: {
-      screen: Music,
+      screen: MusicNavigator,
       navigationOptions: {
         tabBarLabel: "Search",
         tabBarIcon: ({ tintColor }) =>
@@ -89,7 +131,6 @@ export const createRootNavigator = (signedIn = false) => {
     },
     {
       headerMode: "none",
-      mode: "modal",
       initialRouteName: signedIn ? "SignedIn" : "SignedOut"
     }
   );

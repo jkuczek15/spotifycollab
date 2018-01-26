@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "buffer": "^5.0.6",
+    "exp": "^49.0.1",
     "expo": "^23.0.4",
     "react": "16.0.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-23.0.0.tar.gz",
