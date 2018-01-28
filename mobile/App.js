@@ -1,4 +1,5 @@
 import React from "react";
+import { View, StatusBar } from "react-native";
 import { createRootNavigator } from "./includes/Router";
 import { isSignedIn, saveUser, getAccessToken, refreshToken, getRefreshToken } from "./includes/Auth";
 import { userInfo } from './includes/Spotify';

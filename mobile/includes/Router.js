@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Platform, StatusBar } from "react-native";
+import { View, Text, Platform, StatusBar } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 import { FontAwesome } from '@expo/vector-icons';
-import { Header } from 'react-native-elements';
 
 // navigation screens
 import Login from "../screens/Login";
@@ -12,11 +11,17 @@ import Search from "../screens/Search";
 import Songs from "../screens/Songs";
 import Playlists from '../screens/Playlists';
 import MusicHome from '../screens/MusicHome';
+import ViewPlaylist from '../screens/ViewPlaylist';
 
 const headerStyle = {
-  marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  backgroundColor: "#23CF5F"
+  //marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  backgroundColor: "#3C4044"
 };
+
+const searchHeaderStyle = {
+  backgroundColor: "#3C4044",
+  height: StatusBar.currentHeight - 100
+}
 
 const headerTitleStyle = {
   fontSize: 17,
@@ -28,14 +33,16 @@ export const SignedOut = StackNavigator({
   Login: {
     screen: Login,
     navigationOptions: {
-      title: "Login",
-      headerStyle
+      headerTitle: "Login",
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF"
     }
   }
 });
 
 export const MusicNavigator = StackNavigator({
-  Home: {
+  MusicHome: {
     screen: MusicHome,
     navigationOptions: {
       headerTitle: "Music",
@@ -54,6 +61,16 @@ export const MusicNavigator = StackNavigator({
       headerRight: (<View></View>)
     }
   },
+  ViewPlaylist: {
+    screen: ViewPlaylist,
+    navigationOptions: ({navigation}) => ({
+      headerTitle: `${navigation.state.params.name}`,
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF",  
+      headerRight: (<View></View>)
+    })
+  },
   Songs: {
     screen: Songs,
     navigationOptions: {
@@ -66,10 +83,48 @@ export const MusicNavigator = StackNavigator({
   }
 });
 
-export const SignedIn = TabNavigator (
+export const SearchNavigator = StackNavigator(
+  {
+    Search: {
+      screen: Search,
+      navigationOptions: {
+        headerStyle: searchHeaderStyle,
+        headerTitleStyle: headerTitleStyle,
+        headerTintColor: "#FFFFFF",    
+        headerRight: (<View></View>)
+      }
+    }
+  }
+);
+
+export const RoomNavigator = StackNavigator({
+  Room: {
+    screen: Room,
+    navigationOptions: {
+      headerTitle: "Room",
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF"    
+   }
+  },
+});
+
+export const HomeNavigator = StackNavigator({
+  Home: {
+    screen: Home,
+    navigationOptions: {
+      headerTitle: "Home",
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF"    
+   }
+  },
+});
+
+export const SignedInTabs = TabNavigator (
   {
     Home: {
-      screen: Home,
+      screen: HomeNavigator,
       navigationOptions: {
         tabBarLabel: "Home",
         tabBarIcon: ({ tintColor }) =>
@@ -77,7 +132,7 @@ export const SignedIn = TabNavigator (
       }
     },
     Room: {
-      screen: Room,
+      screen: RoomNavigator,
       navigationOptions: {
         tabBarLabel: "Room",
         tabBarIcon: ({ tintColor }) =>
@@ -85,7 +140,7 @@ export const SignedIn = TabNavigator (
       }
     },
     Search: {
-      screen: Search,
+      screen: SearchNavigator,
       navigationOptions: {
         tabBarLabel: "Search",
         tabBarIcon: ({ tintColor }) =>
@@ -107,9 +162,19 @@ export const SignedIn = TabNavigator (
       showIcon: true,
       showLabel: false,
       style:{
-        backgroundColor: "#23CF5F"
+        backgroundColor: "#3C4044"
       }
     }
+  }
+);
+
+export const SignedIn = StackNavigator(
+  {
+    SignedInTabs: {
+      screen: SignedInTabs,
+    }
+  }, {
+    headerMode: 'none'
   }
 );
 
@@ -119,6 +184,10 @@ export const createRootNavigator = (signedIn = false) => {
       SignedIn: {
         screen: SignedIn,
         navigationOptions: {
+          header: <StatusBar
+                      backgroundColor="blue"
+                      barStyle="light-content"
+                    />,
           gesturesEnabled: false
         }
       },

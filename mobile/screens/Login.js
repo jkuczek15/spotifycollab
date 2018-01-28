@@ -90,7 +90,7 @@ export default class Login extends React.Component {
       <View style={{ paddingVertical: 25 }}>
         <Card>
           <Button
-            backgroundColor="#23CF5F"
+            backgroundColor="#3C4044"
             title="Login With Spotify"
             onPress={this.login}
           />

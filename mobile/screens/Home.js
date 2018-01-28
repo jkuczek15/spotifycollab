@@ -13,20 +13,13 @@ export default class Home extends React.Component {
   render() {
     let navigation = this.props.navigation;
     return (
-      <View>
-        <Header
-          centerComponent={{ text: "Home", style: { color: '#fff' } }}
-          backgroundColor="#23CF5F"
-        />
         <View style={{ paddingVertical: 25 }}>
-          <Text>This is the home screen.</Text>
           <Button
-              backgroundColor="#23CF5F"
+              backgroundColor="#3C4044"
               title="SIGN OUT"
               onPress={() => onSignOut().then(() => navigation.navigate("SignedOut"))}
           />
         </View>
-      </View>
     );
   }// end render function
 

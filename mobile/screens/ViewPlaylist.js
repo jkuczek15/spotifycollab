@@ -1,52 +1,39 @@
 import React from "react";
 import { View, ScrollView, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
-import { Header } from 'react-native-elements';
-import { getLibrary } from '../includes/Spotify';
-import { List } from 'react-native-elements';
+import { getPlaylist } from '../includes/Spotify';
 import FlatListItem from '../includes/components/FlatListItem';
 
-export default class Songs extends React.Component {
+export default class ViewPlaylist extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
       tracks: [],
-      offset: 0,
+      playlist_url: '',
       loading: false
     };
-    this.getTracks = this.getTracks.bind(this);
-    this.getNextTracks = this.getNextTracks.bind(this);
+    this.user = props.screenProps.get('user');
     this.token = props.screenProps.get('token');
-  }// end constructor App
+  }// end constructor
 
-  componentDidMount() {
-    this.getTracks();
+  componentWillMount() {
+    this.setState({playlist_url: this.props.navigation.state.params.url}, () => {
+        this.getPlaylist();
+    });
   }// end function componentDidMount
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState.offset === this.state.offset;
-  }// end function shouldComponentUpdate
 
   addTrack(track) {
     // TODO
     console.log(track);
   }// end function addTrack
 
-  getTracks() {
+  getPlaylist() {
     this.setState({ loading: true });
-    getLibrary(this.token, this.state.offset).then((res) => {
-      this.setState({tracks: [...this.state.tracks, ...res.items], loading: false});
+    getPlaylist(this.token, this.state.playlist_url).then((res) => {
+        this.setState({tracks: res.items, loading: false});
     });
   }// end function getTracks
-
-  getNextTracks() {
-    this.setState({ 
-      offset: this.state.offset + 50 
-    }, () => {
-      this.getTracks();
-    });
-  }// end function getNextTracks
-
+ 
   render() {
     if(!this.state.tracks) return null;
     
@@ -56,16 +43,14 @@ export default class Songs extends React.Component {
             keyExtractor={item => item.track.id}
             ListFooterComponent={this.renderFooter}
             renderItem={({item}) =>
-            <FlatListItem title={item.track.name} 
-                          subtitle={item.track.artists.map((artist) => artist.name).join(', ')}
-                          onPress={() => {this.addTrack(item.track)} } />}
-            onEndReached={this.getNextTracks}
-            onEndReachedThreshold={0.4}
+            <FlatListItem title={item.track.name}
+                          subtitle={item.track.artists.map((artist) => artist.name).join(', ')} 
+                          onPress={() => {this.addTrack(item.track.id)} } />}
             removeClippedSubviews={true}
           />
     );
   }// end render function
-
+  
   renderFooter = () => {
     if (!this.state.loading) return null;
 
@@ -81,4 +66,5 @@ export default class Songs extends React.Component {
       </View>
     );
   };
-}// end class Music
+
+}// end class ViewPlaylist

@@ -88,10 +88,6 @@ export default class Room extends React.Component {
       return (
         // implemented without image with header
         <View>
-          <Header
-            centerComponent={{ text: "Join a Room", style: { color: '#fff' } }}
-            backgroundColor="#23CF5F"
-          />
           <View style={styles.container}>
             <Card>
               <FormLabel>Room Name</FormLabel>
@@ -143,7 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   button: {
-    backgroundColor: '#23CF5F',
+    backgroundColor: '#3C4044',
     margin: 5
   }
 });

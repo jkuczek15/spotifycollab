@@ -24,17 +24,17 @@ export default class MusicHome extends React.Component {
   render() {
     return (
 	   <View>
-		<List>
-		  {
-		    list.map((item, i) => (
-		      <ListItem
-			onPress={() => {this.navigate(item.title)}}
-			key={i}
-			title={item.title}
-		      />
-		    ))
-		  }
-		</List>
+      <List>
+        {
+          list.map((item, i) => (
+            <ListItem
+              onPress={() => {this.navigate(item.title)}}
+              key={i}
+              title={item.title}
+            />
+          ))
+        }
+      </List>
 	   </View>
 	  );
   }// end render function
