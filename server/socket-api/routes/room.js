@@ -14,7 +14,7 @@ var environment = require('../../../environments/environment');
 const io = require('socket.io')(server, {
   serveClient: false,
   pingInterval: 15000,
-  pingTimeout: 100000,
+  pingTimeout: 30000,
   cookie: false,
   transports: ['websocket']
 });
@@ -65,15 +65,19 @@ io.on('connection', function (socket) {
 
   socket.on('end-room', function(data) {
     var room = data.room;
+    var user = data.user;
     var host = room.users[0];
-    var queue = room.queue;
 
-    // delete the room from the Mongo database
-    Room.remove({ name: room.name }, function(error, body) { 
-      // emit a null room update so all sockets know to
-      // stop displaying the room
-      io.sockets.in(room.name).emit('room-update', { room: null });
-    });
+    if(user.id !== host.id){
+      socket.emit('error-message', "You are not the host of this room.");
+    }else{
+      // delete the room from the Mongo database
+      Room.remove({ name: room.name }, function(error, body) { 
+        // emit a null room update so all sockets know to
+        // stop displaying the room
+        io.sockets.in(room.name).emit('room-update', { room: null });
+      });
+    }// end if the user sending the request differs from the host
   });
 
   socket.on('join-room', function(data) {
@@ -147,6 +151,7 @@ io.on('connection', function (socket) {
     // make the request for adding a new track
     request.post(options, function(error, response, body) {
       // tell all the users in the room that the playlist has been updated
+      console.log(error, body, response);
       io.sockets.in(room.name).emit('playlist-update');
     });
   });

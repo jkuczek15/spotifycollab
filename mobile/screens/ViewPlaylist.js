@@ -14,23 +14,26 @@ export default class ViewPlaylist extends React.Component {
     };
     this.user = props.screenProps.get('user');
     this.token = props.screenProps.get('token');
+    this.socket = props.screenProps.get('socket');
   }// end constructor
 
   componentWillMount() {
     this.setState({playlist_url: this.props.navigation.state.params.url}, () => {
-        this.getPlaylist();
+      this.getPlaylist();
     });
   }// end function componentDidMount
 
   addTrack(track) {
-    // TODO
-    console.log(track);
+    let room = this.props.screenProps.get('room');
+    if(room){
+      this.socket.emit('add-track', {track: track, room: room});
+    }// end if we have a room
   }// end function addTrack
 
   getPlaylist() {
     this.setState({ loading: true });
     getPlaylist(this.token, this.state.playlist_url).then((res) => {
-        this.setState({tracks: res.items, loading: false});
+      this.setState({tracks: res.items, loading: false});
     });
   }// end function getTracks
  
@@ -45,7 +48,7 @@ export default class ViewPlaylist extends React.Component {
             renderItem={({item}) =>
             <FlatListItem title={item.track.name}
                           subtitle={item.track.artists.map((artist) => artist.name).join(', ')} 
-                          onPress={() => {this.addTrack(item.track.id)} } />}
+                          onPress={() => {this.addTrack(item.track)} } />}
             removeClippedSubviews={true}
           />
     );

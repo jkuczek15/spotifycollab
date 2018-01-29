@@ -1,17 +1,22 @@
 import React from "react";
-import { View, Text, Platform, StatusBar } from "react-native";
+import { View, Text, Platform, StatusBar} from "react-native";
+import { Icon } from 'react-native-elements';
 import { StackNavigator, TabNavigator } from "react-navigation";
 import { FontAwesome } from '@expo/vector-icons';
+import { handleRoomBack } from '../includes/BackHandle';
+import { Ionicons } from '@expo/vector-icons';
 
 // navigation screens
 import Login from "../screens/Login";
 import Home from "../screens/Home";
 import Room from "../screens/Room";
+import RoomForm from '../screens/RoomForm';
 import Search from "../screens/Search";
 import Songs from "../screens/Songs";
 import Playlists from '../screens/Playlists';
 import MusicHome from '../screens/MusicHome';
 import ViewPlaylist from '../screens/ViewPlaylist';
+import { saveAccessToken } from "./Auth";
 
 const headerStyle = {
   //marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -98,14 +103,26 @@ export const SearchNavigator = StackNavigator(
 );
 
 export const RoomNavigator = StackNavigator({
-  Room: {
-    screen: Room,
+  RoomForm: {
+    screen: RoomForm,
     navigationOptions: {
-      headerTitle: "Room",
+      headerTitle: "Join a Room",
       headerStyle: headerStyle,
       headerTitleStyle: headerTitleStyle,
       headerTintColor: "#FFFFFF"    
    }
+  },
+  Room: {
+    screen: Room,
+    navigationOptions: ({navigation}) => ({
+      headerTitle: `${navigation.state.params.room.name}`,
+      headerStyle: headerStyle,
+      headerTitleStyle: headerTitleStyle,
+      headerTintColor: "#FFFFFF",
+      headerLeft: ({ goBack }) => <Ionicons name={'md-arrow-back'} color="white" size={25} style={{marginLeft: 20}}
+                                    onPress={ () => { handleRoomBack(navigation) } }  />,  
+      headerRight: (<View></View>)
+    })
   },
 });
 

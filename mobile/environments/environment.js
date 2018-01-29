@@ -11,5 +11,5 @@ export const environment = {
     client_secret: 'b46c432f728b4131b90eb0109604f010',
     scopes: 'user-read-private user-read-email user-library-read '+
             'playlist-modify-private playlist-modify-public playlist-read-private '+
-            'user-modify-playback-state user-read-currently-playing'
+            'user-modify-playback-state user-read-currently-playing user-read-playback-state'
   };

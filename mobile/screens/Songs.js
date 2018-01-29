@@ -17,6 +17,7 @@ export default class Songs extends React.Component {
     this.getTracks = this.getTracks.bind(this);
     this.getNextTracks = this.getNextTracks.bind(this);
     this.token = props.screenProps.get('token');
+    this.socket = props.screenProps.get('socket');
   }// end constructor App
 
   componentDidMount() {
@@ -28,8 +29,10 @@ export default class Songs extends React.Component {
   }// end function shouldComponentUpdate
 
   addTrack(track) {
-    // TODO
-    console.log(track);
+    let room = this.props.screenProps.get('room');
+    if(room){
+      this.socket.emit('add-track', {track: track, room: room});
+    }// end if we have a room
   }// end function addTrack
 
   getTracks() {
