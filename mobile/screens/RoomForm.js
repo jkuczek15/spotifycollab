@@ -11,11 +11,15 @@ export default class RoomForm extends React.Component {
     super(props);
     this.state = {
       roomName: null,
+      joined: false
     };
     // bind the context of this component to each function defined
     // underneath it
     this.join = this.join.bind(this);
     this.host = this.host.bind(this);
+
+    // whether or not the user has joined a room
+    this.joined = false;
 
     // get the spotify access token from our screen props
     this.token = props.screenProps.get('token');
@@ -29,7 +33,7 @@ export default class RoomForm extends React.Component {
       alert(error);
     });
     this.socket.on('room-update', (data) => {
-      if(data.room){
+      if(data.room && !this.state.joined) {
         // get the new room information
         this.props.navigation.navigate("Room", {
           room: data.room, 
@@ -37,7 +41,10 @@ export default class RoomForm extends React.Component {
           user: this.user,
           token: this.token
         });
+        this.setState({joined: true});
         Keyboard.dismiss();
+      }else{
+        this.setState({joined: false});
       }// end if we have valid room data
     });
   }// end function componentDidMount
@@ -67,6 +74,7 @@ export default class RoomForm extends React.Component {
       createPlaylist(this.token, this.user.id, data).then((res) => {
         // once the playlist is created, send a socket message to the server
         // which creates a new database record
+        this.user.access_token = this.token;
         this.socket.emit('create-room', { user: this.user, roomName: roomName, playlistUri: res.href, playlistId: res.id, contextUri: res.uri });
       });
     }// end if the room name was not provided
