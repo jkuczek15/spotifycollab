@@ -151,7 +151,6 @@ io.on('connection', function (socket) {
     // make the request for adding a new track
     request.post(options, function(error, response, body) {
       // tell all the users in the room that the playlist has been updated
-      console.log(error, body, response);
       io.sockets.in(room.name).emit('playlist-update');
     });
   });
