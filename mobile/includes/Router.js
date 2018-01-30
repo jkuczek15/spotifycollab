@@ -14,7 +14,7 @@ import RoomForm from '../screens/RoomForm';
 import Search from "../screens/Search";
 import Songs from "../screens/Songs";
 import Playlists from '../screens/Playlists';
-import MusicHome from '../screens/MusicHome';
+import Music from '../screens/Music';
 import ViewPlaylist from '../screens/ViewPlaylist';
 import { saveAccessToken } from "./Auth";
 
@@ -47,8 +47,8 @@ export const SignedOut = StackNavigator({
 });
 
 export const MusicNavigator = StackNavigator({
-  MusicHome: {
-    screen: MusicHome,
+  Music: {
+    screen: Music,
     navigationOptions: {
       headerTitle: "Music",
       headerStyle: headerStyle,

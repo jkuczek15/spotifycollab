@@ -1,17 +1,15 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { List, ListItem } from 'react-native-elements';
 
-const list = [
-  {
+const list = [{
     title: "Playlists"
   },
   {
     title: "Songs"
-  }
-];
+}];
 
-export default class MusicHome extends React.Component {
+export default class Music extends React.Component {
 
   constructor(props) {
     super(props);

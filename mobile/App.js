@@ -9,13 +9,11 @@ export default class App extends React.Component {
   
   constructor(props) {
     super(props);
-
     this.state = {
       signedIn: false,
       checkedSignIn: false,
       access_token: null
     };
-
     // create parent screen props to pass down to child screen components
     // we can use closures to pass functions to child components
     // that allow us to modify the state of the parent component

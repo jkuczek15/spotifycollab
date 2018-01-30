@@ -10,7 +10,7 @@ export default class FlatListItem extends React.PureComponent {
 
     render() {
         return <ListItem title={this.props.title}
-                         subtitle={this.props.subtitle}
-                         onPress={this.props.onPress} />;
+                            subtitle={this.props.subtitle}
+                            onPress={this.props.onPress} />;
     }// end render function
 };

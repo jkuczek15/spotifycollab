@@ -13,11 +13,10 @@ export default class Login extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       result: null
     };
-  }// end constructor App
+  }// end constructor Login
 
   getToken = async (code) => {
     // fetch the access token in order for us to make 
@@ -25,23 +24,22 @@ export default class Login extends React.Component {
     // using the authorization code given to us after the user logs in successfully
     let redirect_uri = AuthSession.getRedirectUrl();
 
-    return fetch('https://accounts.spotify.com/api/token?'+
-        querystring.stringify({
-          code: code,
-          redirect_uri: redirect_uri,
-          grant_type: 'authorization_code'
-        }),
-        {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + (new Buffer(environment.client_id + ':' + environment.client_secret).toString('base64'))
-          }
-        }).then(function(response) {
-          return response.json();
-        }, function(error) {
-          console.log(error);
-        })
+    return fetch('https://accounts.spotify.com/api/token?'+ querystring.stringify({
+             code: code,
+             redirect_uri: redirect_uri,
+             grant_type: 'authorization_code'
+           }),
+           {
+             method: "POST",
+             headers: {
+               'Content-Type': 'application/x-www-form-urlencoded',
+               'Authorization': 'Basic ' + (new Buffer(environment.client_id + ':' + environment.client_secret).toString('base64'))
+             }
+           }).then(function(response) {
+             return response.json();
+           }, function(error) {
+             console.log(error);
+           });
   }// end function getToken
 
   login = async () => {

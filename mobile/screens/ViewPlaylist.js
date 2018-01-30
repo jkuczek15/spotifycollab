@@ -1,6 +1,8 @@
 import React from "react";
-import { View, ScrollView, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import { getPlaylist } from '../includes/Spotify';
+import { addTrack } from '../includes/functions/press';
+import { renderFooter } from '../includes/render/footer';
+import { FlatList } from "react-native";
 import FlatListItem from '../includes/components/FlatListItem';
 
 export default class ViewPlaylist extends React.Component {
@@ -12,9 +14,7 @@ export default class ViewPlaylist extends React.Component {
       playlist_url: '',
       loading: false
     };
-    this.user = props.screenProps.get('user');
     this.token = props.screenProps.get('token');
-    this.socket = props.screenProps.get('socket');
   }// end constructor
 
   componentWillMount() {
@@ -22,13 +22,6 @@ export default class ViewPlaylist extends React.Component {
       this.getPlaylist();
     });
   }// end function componentDidMount
-
-  addTrack(track) {
-    let room = this.props.screenProps.get('room');
-    if(room){
-      this.socket.emit('add-track', {track: track, room: room});
-    }// end if we have a room
-  }// end function addTrack
 
   getPlaylist() {
     this.setState({ loading: true });
@@ -39,35 +32,18 @@ export default class ViewPlaylist extends React.Component {
  
   render() {
     if(!this.state.tracks) return null;
-    
     return (
-          <FlatList
-            data={this.state.tracks}
-            keyExtractor={item => item.track.id}
-            ListFooterComponent={this.renderFooter}
-            renderItem={({item}) =>
-            <FlatListItem title={item.track.name}
-                          subtitle={item.track.artists.map((artist) => artist.name).join(', ')} 
-                          onPress={() => {this.addTrack(item.track)} } />}
-            removeClippedSubviews={true}
-          />
+      <FlatList
+        data={this.state.tracks}
+        keyExtractor={item => item.track.id}
+        ListFooterComponent={() => renderFooter(this.state.loading)}
+        renderItem={({item}) =>
+        <FlatListItem title={item.track.name}
+                      subtitle={item.track.artists.map((artist) => artist.name).join(', ')} 
+                      onPress={() => addTrack(this.props, item.track)} />}
+        removeClippedSubviews={true}
+      />
     );
   }// end render function
-  
-  renderFooter = () => {
-    if (!this.state.loading) return null;
-
-    return (
-      <View
-        style={{
-          paddingVertical: 20,
-          borderTopWidth: 1,
-          borderColor: "#CED0CE"
-        }}
-      >
-        <ActivityIndicator animating size="large" />
-      </View>
-    );
-  };
 
 }// end class ViewPlaylist

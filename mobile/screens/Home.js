@@ -1,8 +1,8 @@
 import React from "react";
-import { ScrollView, Text, Linking, View, StyleSheet } from "react-native";
-import { Card, Button, Header } from "react-native-elements";
-import { getAccessToken, onSignOut } from '../includes/Auth';
 import { play, devices } from '../includes/Spotify';
+import { onSignOut } from '../includes/Auth';
+import { View, StyleSheet } from "react-native";
+import { Button } from "react-native-elements";
 
 export default class Home extends React.Component {
   
@@ -22,7 +22,6 @@ export default class Home extends React.Component {
 
     devices(this.token).then((res) => {
       let device_id = res.devices[0].id;
-      console.log(device_id);
       play(this.token, device_id, data).then((res) => {
         console.log(res);
       });
@@ -32,18 +31,16 @@ export default class Home extends React.Component {
   render() {
     let navigation = this.props.navigation;
     return (
-        <View style={{ paddingVertical: 25 }}>
-          <Button
-              buttonStyle={styles.button}
-              title="PLAY QUEUE"
-              onPress={() => this.playQueue()}
-          />
-          <Button
-              buttonStyle={styles.button}
-              title="SIGN OUT"
-              onPress={() => onSignOut().then(() => navigation.navigate("SignedOut"))}
-          />
-        </View>
+      <View style={{ paddingVertical: 25 }}>
+        <Button
+            buttonStyle={styles.button}
+            title="PLAY QUEUE"
+            onPress={() => this.playQueue()} />
+        <Button
+            buttonStyle={styles.button}
+            title="SIGN OUT"
+            onPress={() => onSignOut().then(() => navigation.navigate("SignedOut"))} />
+      </View>
     );
   }// end render function
 

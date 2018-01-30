@@ -1,9 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, Keyboard } from "react-native";
-import { FormLabel, FormInput, Card, Button, Divider, Header } from 'react-native-elements';
+import { View, StyleSheet, Keyboard } from "react-native";
+import { FormLabel, FormInput, Card, Button, Divider } from 'react-native-elements';
 import { createPlaylist } from '../includes/Spotify';
-import { environment } from '../environments/environment';
-import { Ionicons } from '@expo/vector-icons';
 
 export default class RoomForm extends React.Component {
 
@@ -13,15 +11,8 @@ export default class RoomForm extends React.Component {
       roomName: null,
       joined: false
     };
-    // bind the context of this component to each function defined
-    // underneath it
     this.join = this.join.bind(this);
     this.host = this.host.bind(this);
-
-    // whether or not the user has joined a room
-    this.joined = false;
-
-    // get the spotify access token from our screen props
     this.token = props.screenProps.get('token');
     this.user = props.screenProps.get('user');
     this.socket = props.screenProps.get('socket');
@@ -33,17 +24,30 @@ export default class RoomForm extends React.Component {
       alert(error);
     });
     this.socket.on('room-update', (data) => {
-      if(data.room && !this.state.joined) {
-        // get the new room information
-        this.props.navigation.navigate("Room", {
-          room: data.room, 
-          socket: this.socket, 
-          user: this.user,
-          token: this.token
-        });
-        this.setState({joined: true});
-        Keyboard.dismiss();
+      if(data.room) {
+        // we have room data
+        if(!this.state.joined) {
+          // the user hasn't joined a room yet, but there is a room update message
+          // check whether this user is the host of a room by comparing id's
+          if(data.room.users[0].id == this.user.id) {
+            data.room.users[0].access_token = this.token;
+          }// end if this user is the host of a room
+          
+          this.props.screenProps.set('room', data.room, () => {
+            // navigate to the Room screen 
+            // passing room information as a navigation prop
+            this.props.navigation.navigate("Room", {
+              room: data.room, 
+              socket: this.socket, 
+              user: this.user,
+              token: this.token
+            });
+            this.setState({joined: true});
+            Keyboard.dismiss();
+          });
+        }// end if user hasn't joined a room yet
       }else{
+        // a room was destroyed or the user left the room
         this.setState({joined: false});
       }// end if we have valid room data
     });
@@ -51,7 +55,6 @@ export default class RoomForm extends React.Component {
 
   join() {
     let roomName = this.state.roomName;
-    
     if(roomName == null) {
       alert("Please enter a room name.");
     }else{
@@ -61,24 +64,29 @@ export default class RoomForm extends React.Component {
 
   host() {
     let roomName = this.state.roomName;
-
     if(roomName == null) {
-      alert("Please enter a room name.");
-    }else{
-      var data = {
-        description: "S.Party Playlist",
-        public: false,
-        name: "S.Party - " + roomName
-      };
-
-      createPlaylist(this.token, this.user.id, data).then((res) => {
-        // once the playlist is created, send a socket message to the server
-        // which creates a new database record
-        this.user.access_token = this.token;
-        this.socket.emit('create-room', { user: this.user, roomName: roomName, playlistUri: res.href, playlistId: res.id, contextUri: res.uri });
-      });
+      return alert("Please enter a room name.");
     }// end if the room name was not provided
 
+    // create a new request 
+    var data = {
+      description: "S.Party Playlist",
+      public: false,
+      name: "S.Party - " + roomName
+    };
+
+    createPlaylist(this.token, this.user.id, data).then((res) => {
+      // once the playlist is created, send a socket message to the server
+      // which creates a new database record
+      this.user.access_token = this.token;
+      this.socket.emit('create-room', { 
+        user: this.user, 
+        roomName: roomName, 
+        playlistUri: res.href, 
+        playlistId: res.id, 
+        contextUri: res.uri 
+      });
+    });
   }// end function host
 
   render() {
