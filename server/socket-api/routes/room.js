@@ -152,6 +152,7 @@ io.on('connection', function (socket) {
     request.post(options, function(error, response, body) {
       // tell all the users in the room that the playlist has been updated
       io.sockets.in(room.name).emit('playlist-update');
+      socket.emit('track-added');
     });
   });
 

@@ -114,6 +114,21 @@ return fetch('https://api.spotify.com/v1/me/player/play?device_id='+device_id, {
         });
 };
 
+export const pause = async (token) => {
+return fetch('https://api.spotify.com/v1/me/player/pause', {
+            method: "PUT",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        }).then(function(response) {
+            return response;
+        }, function(error) {
+            console.log(error);
+        });
+};
+
 export const userInfo = async (token) => {
 return fetch('https://api.spotify.com/v1/me', {
             method: "GET",

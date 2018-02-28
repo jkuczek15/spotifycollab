@@ -4,6 +4,7 @@ import { addTrack } from '../includes/functions/press';
 import { renderFooter } from '../includes/render/footer';
 import { FlatList } from "react-native";
 import FlatListItem from '../includes/components/FlatListItem';
+import Toast from 'react-native-root-toast';
 
 export default class ViewPlaylist extends React.Component {
 
@@ -15,11 +16,15 @@ export default class ViewPlaylist extends React.Component {
       loading: false
     };
     this.token = props.screenProps.get('token');
+    this.socket = props.screenProps.get('socket');
   }// end constructor
 
   componentWillMount() {
     this.setState({playlist_url: this.props.navigation.state.params.url}, () => {
       this.getPlaylist();
+    });
+    this.socket.on('track-added', (data) => {
+      Toast.show('Track added successfully', {position: -40});
     });
   }// end function componentDidMount
 
