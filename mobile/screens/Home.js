@@ -72,6 +72,10 @@ export default class Home extends React.Component {
             buttonStyle={styles.button}
             title="SIGN OUT"
             onPress={() => onSignOut().then(() => navigation.navigate("SignedOut"))} />
+        <Button
+            buttonStyle={styles.button}
+            title="REFRESH DEVICES"
+            onPress={() => this.componentDidMount()} />
       </View>
     );
   }// end render function
