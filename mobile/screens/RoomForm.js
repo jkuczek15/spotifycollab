@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Keyboard } from "react-native";
 import { FormLabel, FormInput, Card, Button, Divider } from 'react-native-elements';
 import { createPlaylist } from '../includes/Spotify';
+import { renderFooter } from '../includes/render/footer';
 
 export default class RoomForm extends React.Component {
 
@@ -9,7 +10,9 @@ export default class RoomForm extends React.Component {
     super(props);
     this.state = {
       roomName: null,
-      joined: false
+      joined: false,
+      loading: false,
+      rooms: []
     };
     this.join = this.join.bind(this);
     this.host = this.host.bind(this);

@@ -20,6 +20,8 @@ var RoomSchema = new mongoose.Schema({
         type: String
     },
     created: { type: Date, default: Date.now }
-  }, { strict: false, usePushEach: true });
+}, { strict: false, usePushEach: true });
+
+RoomSchema.index({name: 'text', 'name': 'text'});
   
-  module.exports = mongoose.model('Room', RoomSchema);
+module.exports = mongoose.model('Room', RoomSchema);
